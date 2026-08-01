@@ -126,5 +126,29 @@ cost is paid once, not once per module.
 
 ## Fresh-clone reproduction
 
-(pending — full sequence: clone → `renv::restore()` → data download script → analysis order
-above → figure outputs; to be finalised once package installation is complete)
+Verified working for everything completed to date (H0). Figure-generation steps will be added
+to this sequence as each is written.
+
+```bash
+git clone <repo> && cd melanoma-neutrophil-icb
+
+# 1. Restore the exact pinned package library (expect the harmless Bioconductor
+#    bootstrap warning documented under Package management above).
+Rscript --no-restore --no-save -e 'renv::restore()'
+
+# 2. Download raw data from GEO (~200 MB total; not committed to the repository).
+Rscript --no-restore --no-save 02_dataset_audit/01_download_gse120575.R
+Rscript --no-restore --no-save 02_dataset_audit/05_download_gse72056.R
+
+# 3. H0 — dataset audit. The first script decompresses and parses GSE120575's
+#    matrix (~36 min, one-time; cached to data/processed/ as .rds thereafter).
+Rscript --no-restore --no-save 02_dataset_audit/03_h0_neutrophil_marker_test.R
+Rscript --no-restore --no-save 02_dataset_audit/04_h0_marker_cooccurrence.R
+Rscript --no-restore --no-save 02_dataset_audit/06_h0_gse72056_replication.R
+Rscript --no-restore --no-save 02_dataset_audit/07_verify_gse72056_candidates.R
+```
+
+Scripts are numbered in execution order within each module. Note that `02_dataset_audit`
+retains its full script sequence including the audit-verification step (`07_`), so that the
+corrected H0 counts can be re-derived independently by a reader rather than taken on trust —
+see `CHANGELOG.md`, "Correction to H0 evidence following audit."
