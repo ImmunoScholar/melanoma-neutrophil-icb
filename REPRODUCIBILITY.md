@@ -13,7 +13,7 @@ on the machine that produced them, never estimated.
 | R | 4.6.1 "Happy Hop" |
 | Python | (pending — only introduced if a later phase determines it is necessary) |
 | git | 2.43.0 |
-| Hardware | (pending — CPU/RAM to be recorded at first compute-heavy step) |
+| Hardware | 6 cores, 10 GB RAM available to WSL2 |
 
 ## Package management
 
@@ -42,6 +42,14 @@ on the machine that produced them, never estimated.
   network access or User-Agent (both verified working independently). Dataset-download scripts
   in this repository fetch files by explicit, GEO-confirmed URL rather than relying on
   GEOquery's remote directory-listing step.
+- **GSE120575's TPM matrix cannot be loaded with `data.table::fread()` or base `readLines`/
+  `gzfile`.** Decompressed size is 4.5 GB, which exceeds R's ~2.1 GB (2^31-1 byte) limit on a
+  single character string/vector element — both `fread` and base R's gzip-connection reading
+  hit this ceiling and fail with `R character strings are limited to 2^31-1 bytes`. Ruled out
+  CR-only line endings as a cause (verified directly: standard `\n` throughout; lines are just
+  genuinely long because the matrix is 16,291 columns wide). Fix: `readr::read_tsv()`, which
+  streams/memory-maps rather than materialising the file as one contiguous string. Any script
+  in this repository reading this specific file must use `readr::read_tsv()`, not `fread()`.
 
 ## Random seeds
 
@@ -52,17 +60,21 @@ seed at the point it is introduced)
 
 | Accession | Study | Role | Verified | Files retrieved |
 |---|---|---|---|---|
-| GSE120575 | Sade-Feldman et al. | Primary discovery (scRNA-seq, ICB responder/non-responder, paired pre/post) | 2026-08-01 | Downloaded and checksummed — see `data/raw/GSE120575/download_manifest.csv` (TPM matrix, 126,721,504 bytes, MD5 `8bb26ab1e694c1396de3751695fa90e8`; patient/cell metadata, 83,035 bytes, MD5 `1b2788e594d9ee3ebf24b419a7fec295`) |
+| GSE120575 | Sade-Feldman et al. | Primary discovery (scRNA-seq, ICB responder/non-responder, paired pre/post) | 2026-08-01 | Downloaded and checksummed — see `data/raw/GSE120575/download_manifest.csv` (TPM matrix, 126,721,504 bytes, MD5 `8bb26ab1e694c1396de3751695fa90e8`; patient/cell metadata, 83,035 bytes, MD5 `1b2788e594d9ee3ebf24b419a7fec295`). Loaded and verified: 55,738 genes x 16,291 cells; metadata 16,291 rows; join key (TPM column names vs metadata `title` field) matches exactly, 0 mismatches either direction. |
 | GSE115978 | Jerby-Arnon et al. | Secondary scRNA-seq | 2026-08-01 | Not yet downloaded |
 | GSE72056 | Tirosh et al. | Secondary scRNA-seq | 2026-08-01 | Not yet downloaded |
 | GSE78220 | Hugo et al. | Bulk validation (anti-PD-1, pre-treatment) | 2026-08-01 | Not yet downloaded |
 | GSE91061 | Riaz et al. | Bulk validation (anti-CTLA4/anti-PD-1, paired) | 2026-08-01 | Not yet downloaded |
 
 GSE120575's metadata file (`GSE120575_patient_ID_single_cells.txt.gz`) is a GEO submission
-template: lines 1–19 are boilerplate/instructions, the real column header ("Sample name...")
-is on line 20, and per-cell rows follow. The `title` column (e.g. `A10_P3_M11`) matches the
-TPM matrix's column names exactly — this is the join key between expression and metadata.
-Parsing scripts locate the header row by content match, not a hardcoded line number.
+template with two structural quirks, both handled in the parsing script rather than assumed
+away: (1) lines 1–19 are boilerplate/instructions, the real column header ("Sample name...")
+is on line 20 — located by content match, not a hardcoded line number; (2) after the real
+16,291-row sample table, the same file continues with a shared-protocol section (partly
+non-UTF-8 encoded) that is NOT per-cell data — the parser bounds the read to stop exactly
+where lines stop matching the `^Sample [0-9]+\t` pattern. The `title` column (e.g.
+`A10_P3_M11`) matches the TPM matrix's column names exactly — this is the join key between
+expression and metadata.
 
 ## Analysis order
 
@@ -77,7 +89,14 @@ Parsing scripts locate the header row by content match, not a hardcoded line num
 
 ## Runtime
 
-(pending — recorded per module as it is run, with hardware spec)
+| Step | Wall time | Hardware |
+|---|---|---|
+| GSE120575 TPM matrix decompression (gunzip, one-time, cached thereafter) | 20.1 sec | 6 cores, 10 GB RAM (WSL2) |
+| GSE120575 TPM matrix load (`readr::read_tsv`, 55,738 x 16,291) | 2159.5 sec (~36 min) | 6 cores, 10 GB RAM (WSL2) |
+
+The 36-minute load is a real, substantial cost. Every subsequent script that needs this matrix
+caches the parsed object to `data/processed/GSE120575/` as `.rds` after first load, so this
+cost is paid once, not once per module.
 
 ## Figure regeneration
 
