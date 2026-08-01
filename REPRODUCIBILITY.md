@@ -61,10 +61,18 @@ seed at the point it is introduced)
 | Accession | Study | Role | Verified | Files retrieved |
 |---|---|---|---|---|
 | GSE120575 | Sade-Feldman et al. | Primary discovery (scRNA-seq, ICB responder/non-responder, paired pre/post) | 2026-08-01 | Downloaded and checksummed — see `data/raw/GSE120575/download_manifest.csv` (TPM matrix, 126,721,504 bytes, MD5 `8bb26ab1e694c1396de3751695fa90e8`; patient/cell metadata, 83,035 bytes, MD5 `1b2788e594d9ee3ebf24b419a7fec295`). Loaded and verified: 55,738 genes x 16,291 cells; metadata 16,291 rows; join key (TPM column names vs metadata `title` field) matches exactly, 0 mismatches either direction. |
-| GSE115978 | Jerby-Arnon et al. | Secondary scRNA-seq | 2026-08-01 | Not yet downloaded |
-| GSE72056 | Tirosh et al. | Secondary scRNA-seq | 2026-08-01 | Not yet downloaded |
+| GSE72056 | Tirosh et al. | H0 replication check only — independent CD45+-sorted, Smart-seq2 melanoma cohort, tests whether GSE120575's null neutrophil-marker-co-occurrence result replicates (would upgrade H0 evidence grade from Moderate to Strong per the ledger's own criteria) | 2026-08-01 | Not yet downloaded. Confirmed via GEO: single file `GSE72056_melanoma_single_cell_revised_v2.txt.gz`, 71.6 MB, 4,645 cells, CD45+ sorted, Smart-seq2 |
 | GSE78220 | Hugo et al. | Bulk validation (anti-PD-1, pre-treatment) | 2026-08-01 | Not yet downloaded |
 | GSE91061 | Riaz et al. | Bulk validation (anti-CTLA4/anti-PD-1, paired) | 2026-08-01 | Not yet downloaded |
+
+**Scope decision, 2026-08-01:** GSE115978 dropped from the dataset table. It appeared in an
+earlier design pass but was never assigned a role in the locked Analysis order or any
+hypothesis module, and offers no marginal value beyond GSE72056 for the one purpose it could
+have served (H0 replication) — replicating a finding across a second AND third independent
+dataset doesn't move the evidence grade past "Strong" (≥2 datasets), so it would cost download/
+parse time against the one-week budget for zero additional rigor. Rule applied per project
+owner's instruction: pursue additional datasets only where they demonstrably strengthen the
+project, not for completeness.
 
 GSE120575's metadata file (`GSE120575_patient_ID_single_cells.txt.gz`) is a GEO submission
 template with two structural quirks, both handled in the parsing script rather than assumed
