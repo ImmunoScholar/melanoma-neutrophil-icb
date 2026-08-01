@@ -11,7 +11,7 @@ on the machine that produced them, never estimated.
 |---|---|
 | OS | Ubuntu 24.04.4 LTS (via WSL2, host Windows 11) |
 | R | 4.6.1 "Happy Hop" |
-| Python | (pending — only introduced if Phase 1 determines it is necessary) |
+| Python | (pending — only introduced if a later phase determines it is necessary) |
 | git | 2.43.0 |
 | Hardware | (pending — CPU/RAM to be recorded at first compute-heavy step) |
 
@@ -21,7 +21,7 @@ on the machine that produced them, never estimated.
   dependencies).
 - CRAN/Bioconductor binaries served from Posit Public Package Manager (P3M), noble binaries,
   configured in the project `.Rprofile`.
-- Full package versions: see `renv.lock` (created in Phase 1, Step 2).
+- Full package versions: see `renv.lock`.
 - Figure rendering uses `ragg::agg_png` and `svglite` exclusively — base `png()`/cairo is not
   pinned by `renv` and is not byte-reproducible across machines.
 
@@ -65,4 +65,4 @@ Dataset versions (GEO series matrix release dates, checksums where available) to
 ## Fresh-clone reproduction
 
 (pending — full sequence: clone → `renv::restore()` → data download script → analysis order
-above → figure outputs; to be finalised once Phase 1 environment setup is complete)
+above → figure outputs; to be finalised once package installation is complete)

@@ -16,4 +16,13 @@ made merely because they were interesting are not permitted (see `README.md`, sc
   learning models, spatial transcriptomics, additional datasets beyond those specified in the
   dataset audit, CNV inference, survival ML.
 
-No deviations logged yet.
+## 2026-08-01 — Tooling fix (not a scientific deviation)
+
+- `.Rprofile` initially sourced `renv/activate.R` before `renv::init()` had created it, causing
+  every `Rscript` invocation (including `renv::init()` itself) to fail. Fixed by letting
+  `renv::init()` append its own activation line after `options()` is set.
+- Root documentation (`README.md`, `CHANGELOG.md`, `REPRODUCIBILITY.md`) written via a
+  Windows-side tool over `\\wsl.localhost\...` was not reliably visible to native WSL processes
+  (git repeatedly reported no changes despite confirmed on-disk content). Resolved by writing
+  through the Windows scratchpad and copying into the WSL filesystem with `cp`, run from inside
+  the WSL session — the same pattern already used for R scripts.
