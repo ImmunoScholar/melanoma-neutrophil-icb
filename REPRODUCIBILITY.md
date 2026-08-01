@@ -50,6 +50,20 @@ on the machine that produced them, never estimated.
   genuinely long because the matrix is 16,291 columns wide). Fix: `readr::read_tsv()`, which
   streams/memory-maps rather than materialising the file as one contiguous string. Any script
   in this repository reading this specific file must use `readr::read_tsv()`, not `fread()`.
+- **`vroom`/`readr`'s default 128 KB (`VROOM_CONNECTION_SIZE`) line buffer is too small for
+  GSE72056's TPM matrix.** `read_tsv()` fails with "The size of the connection buffer (131072)
+  was not large enough to fit a complete line" — fixed by `Sys.setenv(VROOM_CONNECTION_SIZE =
+  "10000000")` before the read call. This is a different limitation from GSE120575's 2GB-string
+  issue (different file, different failure mode) — do not conflate the two fixes.
+- **Absolute TPM thresholds are not comparable across independently-processed public
+  datasets.** The same `TPM > 1` threshold, applied to the same three genes (CEACAM8, MPO,
+  ELANE), gave individual positivity rates of 0.1–0.4% in GSE120575 (2018, TPM values) versus
+  45.9% in GSE72056 (2016, `log2(TPM/10+1)` back-transformed to TPM-equivalent) — a roughly
+  100x difference in baseline "signal," most likely reflecting differences in RSEM/quantification
+  pipeline and normalization era rather than biology. Any comparison across independently
+  processed public datasets in this project uses relative/rank-based or orthogonal-annotation
+  checks, not shared absolute thresholds — see `02_dataset_audit/README.md` for how this was
+  handled (cell-type cross-reference instead of a chance-level statistical test for GSE72056).
 
 ## Random seeds
 
@@ -61,7 +75,7 @@ seed at the point it is introduced)
 | Accession | Study | Role | Verified | Files retrieved |
 |---|---|---|---|---|
 | GSE120575 | Sade-Feldman et al. | Primary discovery (scRNA-seq, ICB responder/non-responder, paired pre/post) | 2026-08-01 | Downloaded and checksummed — see `data/raw/GSE120575/download_manifest.csv` (TPM matrix, 126,721,504 bytes, MD5 `8bb26ab1e694c1396de3751695fa90e8`; patient/cell metadata, 83,035 bytes, MD5 `1b2788e594d9ee3ebf24b419a7fec295`). Loaded and verified: 55,738 genes x 16,291 cells; metadata 16,291 rows; join key (TPM column names vs metadata `title` field) matches exactly, 0 mismatches either direction. |
-| GSE72056 | Tirosh et al. | H0 replication check only — independent CD45+-sorted, Smart-seq2 melanoma cohort, tests whether GSE120575's null neutrophil-marker-co-occurrence result replicates (would upgrade H0 evidence grade from Moderate to Strong per the ledger's own criteria) | 2026-08-01 | Not yet downloaded. Confirmed via GEO: single file `GSE72056_melanoma_single_cell_revised_v2.txt.gz`, 71.6 MB, 4,645 cells, CD45+ sorted, Smart-seq2 |
+| GSE72056 | Tirosh et al. | H0 replication check only — independent CD45+-sorted, Smart-seq2 melanoma cohort | 2026-08-01 | Downloaded and checksummed — see `data/raw/GSE72056/download_manifest.csv` (75,031,245 bytes, MD5 `9c05cb22103d01d3086a2a952e97e96b`). Loaded and verified: 23,686 genes x 4,645 cells (metadata rows `tumor`/`malignant`/`non-malignant cell type` separated from gene rows by pattern match, not fixed line indices). H0 replicated — see `02_dataset_audit/README.md`. |
 | GSE78220 | Hugo et al. | Bulk validation (anti-PD-1, pre-treatment) | 2026-08-01 | Not yet downloaded |
 | GSE91061 | Riaz et al. | Bulk validation (anti-CTLA4/anti-PD-1, paired) | 2026-08-01 | Not yet downloaded |
 
