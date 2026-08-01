@@ -35,6 +35,13 @@ on the machine that produced them, never estimated.
   Bioconductor package under a distinct `Bioconductor 3.23` source with real pinned versions,
   not a generic CRAN fallback. Expect this warning again on a genuinely fresh clone; it is not
   a sign of a broken `.Rprofile` and requires no action.
+- `options(timeout = 600)` set in `.Rprofile` (default is 60s) — needed for the ~120 MB GEO
+  supplementary matrices this project downloads; the default caused a genuine mid-transfer
+  failure on GSE120575's TPM matrix during Phase 2.
+- `getGEOSuppFiles()` (GEOquery 2.80.0) returned `NULL` for GSE120575 for reasons unrelated to
+  network access or User-Agent (both verified working independently). Dataset-download scripts
+  in this repository fetch files by explicit, GEO-confirmed URL rather than relying on
+  GEOquery's remote directory-listing step.
 
 ## Random seeds
 
@@ -43,16 +50,19 @@ seed at the point it is introduced)
 
 ## Datasets
 
-| Accession | Study | Role | Verified |
-|---|---|---|---|
-| GSE120575 | Sade-Feldman et al. | Primary discovery (scRNA-seq, ICB responder/non-responder, paired pre/post) | 2026-08-01 |
-| GSE115978 | Jerby-Arnon et al. | Secondary scRNA-seq | 2026-08-01 |
-| GSE72056 | Tirosh et al. | Secondary scRNA-seq | 2026-08-01 |
-| GSE78220 | Hugo et al. | Bulk validation (anti-PD-1, pre-treatment) | 2026-08-01 |
-| GSE91061 | Riaz et al. | Bulk validation (anti-CTLA4/anti-PD-1, paired) | 2026-08-01 |
+| Accession | Study | Role | Verified | Files retrieved |
+|---|---|---|---|---|
+| GSE120575 | Sade-Feldman et al. | Primary discovery (scRNA-seq, ICB responder/non-responder, paired pre/post) | 2026-08-01 | Downloaded and checksummed — see `data/raw/GSE120575/download_manifest.csv` (TPM matrix, 126,721,504 bytes, MD5 `8bb26ab1e694c1396de3751695fa90e8`; patient/cell metadata, 83,035 bytes, MD5 `1b2788e594d9ee3ebf24b419a7fec295`) |
+| GSE115978 | Jerby-Arnon et al. | Secondary scRNA-seq | 2026-08-01 | Not yet downloaded |
+| GSE72056 | Tirosh et al. | Secondary scRNA-seq | 2026-08-01 | Not yet downloaded |
+| GSE78220 | Hugo et al. | Bulk validation (anti-PD-1, pre-treatment) | 2026-08-01 | Not yet downloaded |
+| GSE91061 | Riaz et al. | Bulk validation (anti-CTLA4/anti-PD-1, paired) | 2026-08-01 | Not yet downloaded |
 
-Dataset versions (GEO series matrix release dates, checksums where available) to be recorded in
-`02_dataset_audit` at download time.
+GSE120575's metadata file (`GSE120575_patient_ID_single_cells.txt.gz`) is a GEO submission
+template: lines 1–19 are boilerplate/instructions, the real column header ("Sample name...")
+is on line 20, and per-cell rows follow. The `title` column (e.g. `A10_P3_M11`) matches the
+TPM matrix's column names exactly — this is the join key between expression and metadata.
+Parsing scripts locate the header row by content match, not a hardcoded line number.
 
 ## Analysis order
 
