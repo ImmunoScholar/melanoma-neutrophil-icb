@@ -137,18 +137,17 @@ git clone <repo> && cd melanoma-neutrophil-icb
 Rscript --no-restore --no-save -e 'renv::restore()'
 
 # 2. Download raw data from GEO (~200 MB total; not committed to the repository).
-Rscript --no-restore --no-save 02_dataset_audit/01_download_gse120575.R
-Rscript --no-restore --no-save 02_dataset_audit/05_download_gse72056.R
+Rscript --no-restore --no-save 02_dataset_audit/01_download_data.R
 
-# 3. H0 — dataset audit. The first script decompresses and parses GSE120575's
-#    matrix (~36 min, one-time; cached to data/processed/ as .rds thereafter).
-Rscript --no-restore --no-save 02_dataset_audit/03_h0_neutrophil_marker_test.R
-Rscript --no-restore --no-save 02_dataset_audit/04_h0_marker_cooccurrence.R
-Rscript --no-restore --no-save 02_dataset_audit/06_h0_gse72056_replication.R
-Rscript --no-restore --no-save 02_dataset_audit/07_verify_gse72056_candidates.R
+# 3. H0 — dataset audit. GSE120575's script decompresses and parses its matrix
+#    (~36 min, one-time; cached to data/processed/ as .rds thereafter). Both
+#    scripts write their results to results/*.csv and results/*.rds.
+Rscript --no-restore --no-save 02_dataset_audit/02_h0_gse120575.R
+Rscript --no-restore --no-save 02_dataset_audit/03_h0_gse72056.R
 ```
 
-Scripts are numbered in execution order within each module. Note that `02_dataset_audit`
-retains its full script sequence including the audit-verification step (`07_`), so that the
-corrected H0 counts can be re-derived independently by a reader rather than taken on trust —
-see `CHANGELOG.md`, "Correction to H0 evidence following audit."
+Scripts are numbered in execution order within each module. `02_dataset_audit` was
+consolidated from seven scripts (debugging iterations accumulated during development) to
+three, verified byte-for-byte against the original results before the originals were removed
+— see `CHANGELOG.md`, "Script consolidation." Marker definitions and detection logic shared by
+both H0 scripts live in `R/neutrophil_markers.R`.

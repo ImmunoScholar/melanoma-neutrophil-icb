@@ -108,3 +108,22 @@ remains far below the pre-specified `<20` threshold.
 two of the rubric's four criteria (patient-level statistics, multiple-testing correction) were
 written for differential-expression claims and do not apply to an existence/absence claim,
 rather than implying all four were satisfied.
+
+## 2026-08-02 — Script consolidation (not a scientific deviation)
+
+**Deviation.** `02_dataset_audit` accumulated seven scripts during development (three
+debugging iterations of the same download/parse/test logic, arising from the fread-limit,
+vroom-buffer, and metadata-structure problems documented above). Consolidated to three:
+`01_download_data.R`, `02_h0_gse120575.R`, `03_h0_gse72056.R`, plus shared marker-detection
+logic factored into `R/neutrophil_markers.R`.
+
+**Justification.** Flagged in the pre-Phase-3 audit as a quality issue: the frozen spec caps
+this module at ~10–20% of the repository, and a reader should see three scripts that tell one
+clear story, not the sequence of failed attempts that produced them.
+
+**Verification.** The consolidated scripts were run in full before the originals were removed.
+Every number matched exactly: GSE120575 observed co-occurrence 1 (expected 0.14 under
+independence, computed exactly by subset enumeration rather than the original's approximate
+arithmetic); GSE72056 25 candidates, cross-tab identical, 4 non-malignant-unassigned, 1
+duplicate, 3 distinct, 2 patients, 2 unresolved-unassigned — matching the corrected values
+above exactly. No science changed; only the code that produces it.
