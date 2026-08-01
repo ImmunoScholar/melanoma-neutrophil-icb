@@ -24,6 +24,17 @@ on the machine that produced them, never estimated.
 - Full package versions: see `renv.lock`.
 - Figure rendering uses `ragg::agg_png` and `svglite` exclusively — base `png()`/cairo is not
   pinned by `renv` and is not byte-reproducible across machines.
+- **Known harmless warning on first install / fresh clone:** `renv::install()` prints five
+  `error downloading ... PACKAGES [error code 22]` lines for Bioconductor repository paths
+  before any packages are fetched. Cause: `renv` resolves Bioconductor URLs by calling
+  `BiocManager::repositories()`, which reads the `BioC_mirror` option set in `.Rprofile` — but
+  `BiocManager` itself is one of the packages this same call installs, so the very first
+  repository probe runs before it exists and falls back to a guessed URL that P3M does not
+  serve. Once `BiocManager` installs (seconds later, same run), subsequent Bioconductor
+  resolution succeeds via the correct mechanism — confirmed by `renv.lock`, which tags every
+  Bioconductor package under a distinct `Bioconductor 3.23` source with real pinned versions,
+  not a generic CRAN fallback. Expect this warning again on a genuinely fresh clone; it is not
+  a sign of a broken `.Rprofile` and requires no action.
 
 ## Random seeds
 

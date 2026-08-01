@@ -26,3 +26,11 @@ made merely because they were interesting are not permitted (see `README.md`, sc
   (git repeatedly reported no changes despite confirmed on-disk content). Resolved by writing
   through the Windows scratchpad and copying into the WSL filesystem with `cp`, run from inside
   the WSL session — the same pattern already used for R scripts.
+- Core package install (Seurat/Bioconductor stack) surfaced five `error code 22` download
+  failures against guessed Bioconductor repository URLs, before `BiocManager` (itself one of
+  the packages being installed) existed to resolve the `BioC_mirror` option correctly.
+  Investigated against `renv`'s documented Bioconductor resolution mechanism and confirmed via
+  `renv.lock` (Bioconductor packages correctly tagged `Bioconductor 3.23` with real pinned
+  versions) that this is a harmless, self-resolving bootstrap-ordering warning, not a
+  configuration defect. Documented in `REPRODUCIBILITY.md` rather than "fixed" — no working
+  configuration was broken.
