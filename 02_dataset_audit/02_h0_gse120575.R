@@ -58,12 +58,30 @@ if (file.exists(meta_rds) && file.exists(tpm_rds)) {
     cat("Decompressing (one-time)...\n")
     stopifnot(system2("gunzip", c("-k", "-c", shQuote(tpm_gz)), stdout = tpm_txt) == 0)
   }
+  # Column types must be forced explicitly. readr's default type-guessing samples only
+  # the first ~1000 rows; with 55,738 gene rows in this file, that sample is not
+  # representative, and readr silently typed cell columns as character rather than
+  # double for at least some columns (surfaced by the "parsing issues" warning we saw
+  # and did not investigate at the time -- should have). Every value was still correct
+  # (e.g. "9.13" as a string), so any script that wrapped access in as.numeric() (as
+  # every H0 script does) was unaffected -- but the cache itself was wrong, and any
+  # future bulk numeric operation on it (rowSums, colMeans, matrix algebra -- exactly
+  # what H1's pseudobulk construction needs) would silently misbehave. Forcing types
+  # explicitly also skips readr's guessing pass, so this should be no slower.
   cat("Parsing TPM matrix (~36 min on 6 cores / 10GB)...\n")
+  header_names <- names(read_tsv(tpm_txt, n_max = 0, show_col_types = FALSE, progress = FALSE))
+  col_spec <- do.call(
+    cols,
+    c(setNames(list(col_character()), header_names[1]), list(.default = col_double()))
+  )
   t0  <- Sys.time()
-  tpm <- read_tsv(tpm_txt, show_col_types = FALSE, progress = FALSE)
+  tpm <- read_tsv(tpm_txt, col_types = col_spec, progress = FALSE)
   cat("read_tsv wall time:", round(difftime(Sys.time(), t0, units = "secs"), 1), "sec\n")
   setDT(tpm)
   setnames(tpm, 1, "gene")
+
+  stopifnot("Column typing fix failed -- a cell column is still non-numeric" =
+              all(vapply(tpm[, -1], is.numeric, logical(1))))
 
   saveRDS(meta, meta_rds)
   saveRDS(tpm,  tpm_rds)

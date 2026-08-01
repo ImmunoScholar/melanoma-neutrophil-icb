@@ -127,3 +127,36 @@ independence, computed exactly by subset enumeration rather than the original's 
 arithmetic); GSE72056 25 candidates, cross-tab identical, 4 non-malignant-unassigned, 1
 duplicate, 3 distinct, 2 patients, 2 unresolved-unassigned — matching the corrected values
 above exactly. No science changed; only the code that produces it.
+
+## 2026-08-02 — GSE120575 cache regenerated: cell columns were mistyped as character
+
+**Deviation.** `data/processed/GSE120575/tpm.rds`, produced by `02_h0_gse120575.R`, was
+regenerated with an explicit `col_types` specification and the script was modified to assert
+column numericness going forward.
+
+**What was wrong.** `readr::read_tsv()`'s default type-guessing samples only the first ~1000
+rows; this file has 55,738 gene rows, so the sample was unrepresentative and readr silently
+typed cell columns as `character` rather than `double`. Discovered while building
+`03_recruitment/01_compartment_audit.R`: a module-score computation using bulk `mean()` across
+several genes returned 100% `NA` with warnings ("argument is not numeric or logical"), traced
+via a minimal standalone reproduction (`03_recruitment/00_diagnose_subset.R`) to the underlying
+column type, not a logic error in the new script.
+
+**Why H0 was unaffected.** Every H0 script wrapped value access in `as.numeric()` at the point
+of use, which silently and correctly converts `"9.13"` to `9.13` — so all of H0's arithmetic
+was always on the right numbers. The cache itself was still wrong, and any future bulk numeric
+operation (exactly what pseudobulk construction in H1 requires) would have silently misbehaved
+rather than erroring clearly.
+
+**Verification.** Cache regenerated with `col_types = cols(<first col> = col_character(),
+.default = col_double())`, plus a `stopifnot()` asserting every cell column is numeric before
+the script proceeds. `02_h0_gse120575.R` was rerun in full and reproduced H0's original results
+exactly: observed co-occurrence 1, expected 0.14, identical per-marker positivity table,
+identical co-occurrence distribution. H0's committed conclusions, grade, and decision-tree
+branch are unaffected — this was a representation defect, not a data or results error. Parse
+time also dropped from ~36 min to ~8.8 min, since explicit typing skips readr's guessing pass.
+
+**Not fixed:** GSE72056's cache almost certainly has the same underlying issue (same
+`read_tsv()` call pattern, 23,686 gene rows, no explicit `col_types`), but it is scoped to the
+already-complete H0 replication only and not touched by any further module, so regenerating it
+was not worth the cost. Documented in `REPRODUCIBILITY.md` rather than silently left unstated.

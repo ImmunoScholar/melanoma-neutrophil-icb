@@ -50,6 +50,23 @@ on the machine that produced them, never estimated.
   genuinely long because the matrix is 16,291 columns wide). Fix: `readr::read_tsv()`, which
   streams/memory-maps rather than materialising the file as one contiguous string. Any script
   in this repository reading this specific file must use `readr::read_tsv()`, not `fread()`.
+- **`read_tsv()`'s default column-type guessing mistyped GSE120575's cell columns as
+  `character`, not `double`.** readr guesses types from a sample of the first ~1000 rows;
+  with 55,738 gene rows in this file, that sample is unrepresentative and readr silently
+  typed at least some cell columns as character. Every value was still correct as text
+  (e.g. `"9.13"`), so H0 scripts, which always wrapped access in `as.numeric()`, were
+  unaffected — confirmed empirically by regenerating the cache with corrected types and
+  reproducing H0's results exactly (observed co-occurrence 1, expected 0.14, identical
+  per-marker table). But `mean()`, `rowSums()`, `colMeans()` and similar bulk numeric
+  operations on the uncorrected cache silently return `NA` with only a warning — exactly
+  what H1's pseudobulk construction needs to do at scale. Fix: force column types explicitly
+  via `col_types = cols(<first column> = col_character(), .default = col_double())`, which
+  also skips readr's guessing pass — parse time dropped from ~36 min to ~9 min as a result.
+  Applied in `02_h0_gse120575.R`, which now also asserts (`stopifnot`) that every cell
+  column is numeric before proceeding, so this cannot silently recur. **GSE72056's cache
+  almost certainly has the same underlying issue** (same `read_tsv()` pattern, 23,686 gene
+  rows, no explicit `col_types`) but was not fixed, since it is scoped to the already-complete
+  H0 replication only and not touched by any further module.
 - **`vroom`/`readr`'s default 128 KB (`VROOM_CONNECTION_SIZE`) line buffer is too small for
   GSE72056's TPM matrix.** `read_tsv()` fails with "The size of the connection buffer (131072)
   was not large enough to fit a complete line" — fixed by `Sys.setenv(VROOM_CONNECTION_SIZE =
@@ -114,11 +131,14 @@ expression and metadata.
 | Step | Wall time | Hardware |
 |---|---|---|
 | GSE120575 TPM matrix decompression (gunzip, one-time, cached thereafter) | 20.1 sec | 6 cores, 10 GB RAM (WSL2) |
-| GSE120575 TPM matrix load (`readr::read_tsv`, 55,738 x 16,291) | 2159.5 sec (~36 min) | 6 cores, 10 GB RAM (WSL2) |
+| GSE120575 TPM matrix load, unguessed types (`readr::read_tsv`, original) | 2159.5 sec (~36 min) | 6 cores, 10 GB RAM (WSL2) |
+| GSE120575 TPM matrix load, explicit `col_types` (corrected, current) | 526.2 sec (~8.8 min) | 6 cores, 10 GB RAM (WSL2) |
 
-The 36-minute load is a real, substantial cost. Every subsequent script that needs this matrix
+The load is a real, substantial cost regardless. Every subsequent script that needs this matrix
 caches the parsed object to `data/processed/GSE120575/` as `.rds` after first load, so this
-cost is paid once, not once per module.
+cost is paid once, not once per module. The original 36-minute figure is retained in this table
+rather than deleted, since it documents why explicit column typing is worth doing even setting
+aside the correctness fix it was actually needed for.
 
 ## Figure regeneration
 
