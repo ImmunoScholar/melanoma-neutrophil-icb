@@ -82,6 +82,34 @@ on the machine that produced them, never estimated.
   checks, not shared absolute thresholds — see `02_dataset_audit/README.md` for how this was
   handled (cell-type cross-reference instead of a chance-level statistical test for GSE72056).
 
+- **`decoupleR::get_collectri()` fails: an external Ensembl outage, not a local misconfiguration.**
+  `OmnipathR` resolves the organism argument by scraping
+  `https://www.ensembl.org/info/about/species.html`, which now returns 404/403. Confirmed as a
+  known, currently-unresolved upstream issue via the actual GitHub issue trackers
+  (`saezlab/decoupleR` #153, #162; `saezlab/OmnipathR` #117; `saezlab/CollecTRI` #19), not
+  assumed from the error text. Passing `organism = 9606` (NCBI taxonomy ID) instead of
+  `"human"` does **not** work around it — confirmed by direct test, still fails inside
+  `unnest_evidences()`. **Working fix:** download CollecTRI directly from OmniPath's own REST
+  API, `https://omnipathdb.org/interactions?resources=CollecTRI&genesymbols=1&format=tsv`,
+  which is independent of `OmnipathR`'s R-side organism resolution — see
+  `06_regulation_communication/01_collectri_resolved.R` and `CHANGELOG.md` for the full story.
+  Requesting `&fields=consensus_stimulation,consensus_inhibition,...` explicitly causes the API
+  to reject the request (`consensus_inhibition` is not a valid `fields` value); the default
+  response already includes those columns, so no `fields` parameter should be passed at all.
+- **A CollecTRI static-file mirror can be genuinely mislabeled — verify casing, don't trust the
+  filename.** The paper's own Zenodo archive (record 8222799, `human_prior_tri.csv`) returns
+  Title-Case, mouse-orthology-cased gene symbols (`Myc`, `Spi1`, `Smad3`...) despite the
+  filename. Do not use this file. The OmniPath REST API fix above returns genuinely
+  human-cased data instead.
+- **Not every non-uppercase gene symbol from OmniPath/CollecTRI is a casing bug.** Human gene
+  nomenclature legitimately includes lowercase letters in two conventions relevant to this
+  network: HGNC's `orf` genes (e.g. `C9orf72` — lowercase `orf` is the *correct* official
+  symbol) and miRBase's `hsa-miR-*` microRNA identifiers (a separate naming system from HGNC).
+  `01_collectri_resolved.R` checks for exactly these two patterns before accepting any
+  non-uppercase target symbol; anything else is treated as a real anomaly, printed, and
+  dropped (found once: target `"Mgu"` on the `PPARA` edge, an isolated OmniPath export
+  artefact for UniProt `P10746`/`UROS`, confirmed via a direct UniProt lookup, not guess-fixed).
+
 ## Random seeds
 
 (pending — every stochastic step, e.g. UMAP, permutation tests, will set and record an explicit

@@ -160,3 +160,89 @@ time also dropped from ~36 min to ~8.8 min, since explicit typing skips readr's 
 `read_tsv()` call pattern, 23,686 gene rows, no explicit `col_types`), but it is scoped to the
 already-complete H0 replication only and not touched by any further module, so regenerating it
 was not worth the cost. Documented in `REPRODUCIBILITY.md` rather than silently left unstated.
+
+## 2026-08-02 — H4 tooling: CollecTRI resolved via OmniPath REST API, not Zenodo
+
+**Deviation.** `decoupleR::get_collectri()` was unusable (see the tool-installation entry
+below) and the initially-attempted Zenodo static-file fallback
+(`data/raw/collectri_human_prior_tri.csv`, record 8222799, `human_prior_tri.csv`) was
+discovered to be mouse-orthology-cased (`Myc`, `Spi1`, `Smad3`, `Tert`, `Bglap`...), not human,
+despite its filename claiming otherwise. The network actually used for H4 was instead
+downloaded directly from OmniPath's own REST API
+(`https://omnipathdb.org/interactions?resources=CollecTRI&genesymbols=1&format=tsv`), which
+bypasses `OmnipathR`'s broken Ensembl-dependent organism resolution entirely and returns
+native, genuinely human-cased data.
+
+**What was wrong (Zenodo).** `data/raw/collectri_human_prior_tri.csv` downloaded successfully
+and had the expected `source`/`target`/`mor` shape, but its gene symbols were Title Case
+(mouse/MGI convention), not the all-uppercase convention every gene in this project's own
+expression matrices uses (e.g. `LTB`, `CXCL13`). Used as-is, this network would have silently
+matched almost nothing against the matrix — a near-total, non-obvious failure with no error
+message, not a crash. Confirmed by directly comparing specific edges (`Myc->Tert` in the
+Zenodo file) against OmniPath's REST API output for the same edge (`MYC->TERT`, correctly
+cased) — same biological edge, different casing, proving the Zenodo file's casing (not the
+underlying biology) was the problem.
+
+**Fix.** `06_regulation_communication/01_collectri_resolved.R` queries
+`https://omnipathdb.org/interactions?resources=CollecTRI&genesymbols=1&format=tsv` directly
+via `download.file()` — no R package call to `OmnipathR`/`decoupleR` is involved in this step,
+so the broken Ensembl species-lookup is never invoked. An earlier draft of this script
+additionally requested `&fields=extra_attrs,consensus_stimulation,consensus_inhibition,
+consensus_direction`; OmniPath's API rejected this (`consensus_inhibition` is not a valid
+`fields` value there) — the default response already includes
+`consensus_stimulation`/`consensus_inhibition` without needing to request them, so the
+`&fields=...` clause was removed entirely rather than corrected.
+
+**Two further issues caught during verification, not assumed away:**
+1. `read.delim()`'s default type-guessing left `consensus_stimulation`/`consensus_inhibition`
+   as character `"True"`/`"False"` strings rather than logical (only the exact strings
+   `"TRUE"`/`"FALSE"` are auto-detected), which crashed the `|` filter with "operations are
+   possible only for numeric, logical or complex types." Fixed with an explicit
+   `as.logical()` coercion, guarded by a `stopifnot(!anyNA(...))` so a future format change
+   would halt loudly rather than silently drop rows to `NA`.
+2. The script's own casing-verification step reported `All source/target symbols uppercase:
+   FALSE` even after switching to the REST API — investigated rather than dismissed as noise.
+   208 of 61,220 target symbols (never source/TF symbols) were genuinely non-uppercase:
+   207 matched two known-legitimate human-nomenclature conventions (HGNC's `orf` genes, e.g.
+   `C9orf72` — lowercase `orf` is the *correct* official casing, not an error; and miRBase's
+   `hsa-miR-*` microRNA identifiers, a separate naming system from HGNC gene symbols). The
+   208th, target `"Mgu"` on the `PPARA` edge, did not match either pattern; querying its
+   underlying UniProt accession (`P10746`) directly confirmed it is **UROS**
+   (uroporphyrinogen-III synthase) — `"Mgu"` is not a valid symbol for it under any
+   nomenclature, an isolated upstream data artefact in OmniPath's `CollecTRI` export. Rather
+   than guess a correction (e.g. assuming it should read `UROS`) or silently keep a
+   known-wrong symbol, that single edge is dropped and reported by the script
+   (`stopifnot(sum(anomalous) <= 5)` guards against this masking a larger systemic problem in
+   a future re-download).
+
+**Verification.** Final network: 61,219 edges, 1,192 unique TFs (all uppercase, verified),
+saved to `data/processed/collectri_human_verified.rds`. The superseded mouse-cased Zenodo file
+is removed by the script itself; `data/raw/` is gitignored regardless. Ready for `decoupleR`
+TF-activity analysis (§8 Step 4 of `CONTINUATION_BRIEF.md`).
+
+## 2026-08-01/02 — H4 tool installation: `decoupleR::get_collectri()` blocked by an external Ensembl outage
+
+**Deviation.** `decoupleR::get_collectri()`, the documented way to obtain the CollecTRI
+TF-target regulon, cannot be used. `OmnipathR` resolves the organism argument by scraping
+`https://www.ensembl.org/info/about/species.html`, which now returns 404/403 — a known,
+currently-unresolved upstream issue (`github.com/saezlab/decoupleR` issues #153, #162;
+`github.com/saezlab/OmnipathR` issue #117; `github.com/saezlab/CollecTRI` issue #19),
+confirmed via those issue trackers rather than assumed from the error message alone.
+
+**Plan A tried and failed.** Passing `organism = 9606` (the NCBI taxonomy ID for human)
+instead of the string `"human"` is a documented alternative input type, and was tried on the
+theory it might skip the broken name-resolution path. It still routes through the same
+internal static-table fallback and fails with `"argument is of length zero"` inside
+`unnest_evidences()`. Do not retry this — confirmed not to work
+(`06_regulation_communication/00_tool_smoke_test.R`).
+
+**Resolution.** See the entry directly above — CollecTRI obtained via OmniPath's REST API,
+completely independent of `OmnipathR`/`decoupleR`'s broken Ensembl-dependent path.
+`decoupleR` itself is still used downstream for the TF-activity scoring functions, which
+don't depend on the broken organism-resolution code path — only `get_collectri()`'s
+convenience wrapper does.
+
+**Not affected:** `liana`'s tool check (`show_resources()`, `select_resource("Consensus")`)
+succeeded independently and cleanly on first try — this bug is specific to
+`OmnipathR`'s organism-name resolution and does not touch `liana`'s ligand-receptor resource
+loading.
