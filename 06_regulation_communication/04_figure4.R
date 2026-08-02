@@ -130,7 +130,8 @@ figure4 <- panel_A / panel_B / panel_C +
     caption = paste0("754 TFs tested (decoupleR::run_ulm against verified CollecTRI, 42,698 edges/1,178 TFs). ",
                       "56 significant at FDR<0.05, Meff=31.3 effective independent programs (Nyholt 2004). ",
                       "Grade: Moderate. Communication-network component of H4 not yet run. ",
-                      "See 06_regulation_communication/README.md."),
+                      "Compartment-level exploratory analysis is reported in the H4 module documentation, ",
+                      "not shown here. See 06_regulation_communication/README.md."),
     theme = theme_project()
   )
 

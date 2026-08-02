@@ -1,9 +1,9 @@
 # Regulatory Coherence of the Recruitment Programme (H4)
 
-**Status: primary analysis complete. This README covers the primary (patient-level
-TF-activity) result only.** The ligand-receptor communication analysis (H4's second
-component) and the pre-specified secondary compartment-level TF-activity follow-up are not
-yet run — see `CONTINUATION_BRIEF.md` §8 and `CHANGELOG.md`'s pre-registration entry.
+**Status: primary and secondary TF-activity analyses complete. This README covers H4's
+TF-activity component in full (primary + pre-registered secondary).** The ligand-receptor
+communication analysis (H4's second, separate component, testing convergence on T-cell
+suppression) has not yet been run — see `CONTINUATION_BRIEF.md` §8.
 
 ## Hypothesis
 
@@ -45,6 +45,17 @@ were applied to the 56 FDR<0.05 hits' activity-score correlation across the 19 p
 hierarchical clustering (average linkage, multiple cut heights reported rather than one
 chosen cutoff) and Nyholt's (2004, *Am J Hum Genet*) eigenvalue-based effective-number-of-
 independent-tests statistic.
+
+**Secondary, exploratory test (compartment-level) — pre-registered in `CHANGELOG.md` before
+any H4 result existed.** Restricted strictly to the primary's own 56 locked FDR<0.05 TFs (read
+directly from the committed `results/h4_tf_activity_ranked.csv`, asserted `== 56` in code — no
+new discovery search). T_cell/NK/B_cell tested; Myeloid excluded, same justification as H2's
+own secondary test (only 3 usable responder patients, re-verified here rather than assumed
+unchanged). Whole-transcriptome pseudobulk built per compartment per patient (same >=10-cell
+threshold as H2), `decoupleR::run_ulm()` run per compartment, then subset to the locked 56
+TFs before any testing. `limma`, same direction convention, Benjamini-Hochberg FDR pooled
+globally across all 168 tests (3 compartments x 56 TFs), matching H2's secondary-test
+convention exactly.
 
 ## Evidence
 
@@ -97,6 +108,35 @@ individually rather than only as counts:
 Full clustering output: `results/h4_tf_module_clustering.rds`
 (`06_regulation_communication/03c_h4_module_clustering.R`).
 
+**Secondary test result.** 51 of 168 tests significant at global FDR<0.05 — but concentrated
+overwhelmingly in T_cell (43/56 TFs tested, a 76.8% hit rate) versus NK (5/56, 8.9%) and
+B_cell (3/56, 5.4%). Audited before treating this as informative, not accepted at face value
+(`06_regulation_communication/05b_secondary_audit.R`, `05c_tcell_redundancy_check.R`):
+
+| Compartment | Usable patients | Hit rate (of 56) | Correlation with primary whole-sample logFC |
+|---|---|---|---|
+| T_cell | 19 (= full primary cohort) | 76.8% (43) | r = 0.887 |
+| NK | 16 | 8.9% (5) | r = 0.76 |
+| B_cell | 11 | 5.4% (3) | r = 0.634 |
+
+T_cell's result is **not treated as an independent finding**: T cells are 69% of the
+whole-sample composition (`03_recruitment/README.md`), so the T_cell-compartment pseudobulk
+is compositionally close to the whole-sample pseudobulk that produced these 56 TFs as hits in
+the first place — T_cell has the same patient count as the primary analysis itself (19/19)
+and the highest correlation with the primary signal (r=0.887) of the three compartments. High
+T_cell significance is expected largely by construction, not evidence of T-cell-specific
+regulation.
+
+The informative component is **NK (5 TFs) and B_cell (3 TFs)**, which reach significance
+despite substantially lower power and weaker correlation with the primary signal:
+
+- **NK**: `ZNF395` (logFC +0.95), `SREBF1` (+1.09), `IRF3` (+1.15), `TLX2` (+0.78), `IRF2`
+  (+1.16) — all higher in non-responder, all members of the primary's non-responder-elevated
+  Module 1 or Module 6.
+- **B_cell**: `ZFX` (logFC -1.67), `IKZF3` (-1.74), `IKZF2` (-1.98) — all higher in responder;
+  IKZF3 is a member of the primary's responder-elevated Module 5 (lymphocyte-differentiation
+  cluster).
+
 ## Interpretation
 
 1. **Statistical change.** 56/754 TFs (7.4%) significant at FDR<0.05, patient-level units,
@@ -122,6 +162,31 @@ Full clustering output: `results/h4_tf_module_clustering.rds`
    based TF occupancy, or perturbation of E2F/SREBF activity in a relevant model) is noted
    here rather than acted on prematurely.
 
+**Secondary, exploratory interpretation** (compartment-level, same five steps, applied only
+to the NK/B_cell result — T_cell is excluded from substantive interpretation per the audit
+above):
+
+1. **Statistical change.** 8 of 56 locked TFs significant at global FDR<0.05 outside T_cell
+   (5 NK, 3 B_cell), despite those compartments carrying 16 and 11 usable patients
+   respectively (versus T_cell's 19) and weaker correlation with the primary signal.
+2. **Biological process.** The two non-T_cell compartments implicate different halves of the
+   primary's module structure: NK's hits are non-responder-elevated metabolic/IRF-axis TFs
+   (Module 1/6); B_cell's hits are responder-elevated lymphocyte-differentiation TFs (Module
+   5, including IKZF3). This echoes H2's own finding that B cells carry a
+   lymphocyte-organisational, response-associated signal (LTB), now extended from raw
+   expression to inferred regulatory activity.
+3. **Tumour immunology implication.** A B-cell-localized lymphocyte-differentiation
+   regulatory signal accompanying response, alongside an NK-localized component of the
+   broader non-responder-elevated metabolic programme, is consistent with — but does not
+   establish — compartment-specific regulatory contributions layered underneath the dominant
+   whole-sample (largely T-cell-driven) signal.
+4. **Translational implication.** Not stated — explicitly deferred; per the pre-registration,
+   this exploratory result does not alter H4's primary conclusion or any other module's
+   conclusions.
+5. **Validating experiment.** Deferred to `08_experimental_translation`. If independently
+   corroborated by H5 or the communication-network component, revisit in `09_synthesis`; not
+   acted on prematurely from this result alone.
+
 ## Limitations
 
 Per the Negative Results Policy, the audit findings above are reported in full rather than
@@ -143,15 +208,43 @@ omitted because they complicate a clean narrative.
   analysis (testing convergence on T-cell suppression, the second half of H4's hypothesis) has
   not yet been run — this README and evidence-ledger entry cover the TF-activity result only.
 
+**Secondary test limitations**, per the Negative Results Policy stated in full rather than
+downplayed:
+
+- **T_cell's result is excluded from substantive interpretation.** Its high hit rate is
+  explained by T cells' 69% share of the whole-sample composition and by T_cell having the
+  same patient count as the primary analysis (19/19) — not treated as evidence of
+  T-cell-specific biology.
+- **NK and B_cell hits are a small-N exploratory result** (5 and 3 TFs respectively, out of
+  56 tested), themselves at reduced power (16 and 11 usable patients). Genuinely informative
+  but not substantial.
+- **Same therapy-type confound and same cohort as the primary result** — not an independent
+  sample, not adjustable at this size.
+- **Not independently validated** — remains H5's role if pursued further.
+- **Per the pre-registration conditions**, this result does not alter H4's primary
+  conclusion or any other module's conclusions, and is not promoted into Figure 4 or any
+  other main-narrative figure — see `figures/figure4_h4_tf_activity` caption for the
+  cross-reference.
+
 ## Conclusion
 
-**Evidence grade: Moderate.** Patient-level statistics and multiple-testing correction are
-satisfied; the module-clustering characterization adds honest specificity (Meff≈31, not 56)
-rather than inflating the finding; one hit cluster (IKZF3/BACH2/SATB2) is concordant with
-independently published lymphocyte-differentiation biology, stated as plausibility, not
-validation. Capped at Moderate rather than Strong for the same reason as H1/H2: no
-cross-dataset replication of its own, and TF activity here is inferred rather than directly
-measured. The recruitment programme is regulatorily coherent in the sense tested here — a
-small number of correlated, plausible regulatory programs, not undirected noise — but this is
-one component of H4, not the whole hypothesis; the communication-network component remains to
-be run.
+**Primary result: evidence grade Moderate.** Patient-level statistics and multiple-testing
+correction are satisfied; the module-clustering characterization adds honest specificity
+(Meff≈31, not 56) rather than inflating the finding; one hit cluster (IKZF3/BACH2/SATB2) is
+concordant with independently published lymphocyte-differentiation biology, stated as
+plausibility, not validation. Capped at Moderate rather than Strong for the same reason as
+H1/H2: no cross-dataset replication of its own, and TF activity here is inferred rather than
+directly measured. The recruitment programme is regulatorily coherent in the sense tested
+here — a small number of correlated, plausible regulatory programs, not undirected noise —
+but this is one component of H4, not the whole hypothesis; the communication-network
+component remains to be run.
+
+**Secondary compartment-level result: evidence grade Exploratory** — graded separately, not
+combined with the primary, matching H2's precedent for genuinely different confidence
+levels. T_cell's contribution to this result is not treated as independent evidence (see
+Limitations). The NK (5 TFs) and B_cell (3 TFs) hits, though few and reduced-power, are
+directionally consistent with and extend the primary's module structure — B cells carrying
+the responder-elevated lymphocyte-differentiation signal (IKZF3/IKZF2/ZFX), echoing H2's own
+B-cell/LTB finding — and are reported as supporting evidence, not promoted further, per the
+pre-registered conditions. May be revisited in `H5` or `09_synthesis` if independently
+corroborated; not acted on further from this result alone.
