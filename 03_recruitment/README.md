@@ -62,10 +62,11 @@ covariate; this table is retained as an explicit caveat rather than adjusted awa
    different cellular source or a non-organised context for CXCL13 in this cohort, which H2
    (compartment attribution) and H4 (communication network) are positioned to address, not
    something bulk pseudobulk can settle alone.
-3. **Tumour immunology implication.** LTB's direction is concordant with independently
-   published TLS biology — a favourable, not proof, sanity signal that this pipeline recovers
-   a real, previously-characterised association rather than only noise. This is stated as
-   consistency with literature, not as validation.
+3. **Tumour immunology implication.** The observed direction of LTB expression is concordant
+   with previous reports linking lymphotoxin signalling and tertiary lymphoid structures to
+   favourable immunotherapy response. This concordance increases the biological plausibility
+   of the finding but should not be interpreted as independent validation. Formal validation
+   remains the objective of H5, using external cohorts.
 4. **Translational implication.** Not stated yet — premature ahead of H2 (source), H4
    (network context) and H5 (independent-cohort validation).
 5. **Validating experiment.** Deferred to `08_experimental_translation`, once findings from
