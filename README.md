@@ -126,6 +126,21 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   own conclusions and grades are unchanged. Full results, Figure 5 (Panel A: H5a; Panel B:
   H5b — H5c is not shown in a figure, consistent with its exploratory tier), and limitations
   in `07_validation_concordance/README.md`.
+- **`08_experimental_translation`: complete.** Not a hypothesis-testing module (exempt from
+  the six-heading template, per the frozen architecture) — proposes experimental validation
+  for every Moderate/Strong ledger entry, one each, no new biology introduced: **H0** (Strong)
+  — non-excluding protocol (flow cytometry / fixed-chemistry scRNA-seq) to test whether
+  neutrophil absence is protocol artefact, as concluded, or genuine depletion. **H1**
+  (Moderate) — multiplex IF/RNAscope for LTB/CCL3/CCL4/CXCL13 on an independent tissue
+  cohort. **H2** (Moderate, primary component) — IF co-staining or sorted-population
+  qPCR to test each ligand's compartment attribution directly. **H4** (Moderate,
+  TF-activity component) — CUT&RUN/ChIP-seq or ATAC-seq footprinting for representative TFs
+  from each named module, to test occupancy directly rather than infer activity from
+  expression. Exploratory and Negative-finding entries (H2-secondary, H4-secondary,
+  H4-communication, H5a's non-LTB genes, H5b, H5c) are explicitly not given validation
+  proposals, stated and justified in `08_experimental_translation/README.md` rather than
+  silently omitted. No new evidence-ledger rows — this module makes no graded claim of its
+  own.
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every
 post-freeze deviation and its justification.
