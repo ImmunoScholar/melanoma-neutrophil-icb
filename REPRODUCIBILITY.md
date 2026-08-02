@@ -236,12 +236,31 @@ aside the correctness fix it was actually needed for.
 
 ## Figure regeneration
 
-(pending — one command per figure, to be added as each analysis script is written)
+**Updated 2026-08-02** (final consistency audit) — this section and the fresh-clone sequence
+below were found to still reflect only H0's completion despite the project now being finished
+through Module 09; corrected here to cover all six figures, not as a new analysis but as a
+documentation-completeness fix. All figures render via `R/theme_project.R`'s `save_figure()`
+(`ragg::agg_png` + `svglite` exclusively) and are written to `figures/*.png`/`*.svg`.
+
+| Figure | Script | Requires (already-committed inputs) |
+|---|---|---|
+| 1 (H0) | `02_dataset_audit/04_figure1.R` | `02_h0_gse120575.R`, `03_h0_gse72056.R` already run |
+| 2 (H1) | `03_recruitment/04_figure2.R` | `03_h1_discovery_screen.R` already run |
+| 3 (H2) | `04_cellular_sources/03_figure3.R` | `02_h2_compartment_attribution.R` already run |
+| 4 (H4) | `06_regulation_communication/04_figure4.R` | `03_h4_tf_activity.R`, `03c_h4_module_clustering.R`, `07_h4_lr_communication.R`, `07b_h4_lr_suppression_enrichment.R` already run |
+| 5 (H5) | `07_validation_concordance/05_figure5.R` | `04_h5a_gene_replication.R`, `06_h5b_tf_module_replication.R` already run |
+| 6 (Synthesis) | `09_synthesis/01_figure6_synthesis_model.R` | H1/H2/H4/H5 result tables already committed (`results/*.csv`, `*.rds`) |
 
 ## Fresh-clone reproduction
 
-Verified working for everything completed to date (H0). Figure-generation steps will be added
-to this sequence as each is written.
+Verified working for H0 at the time this section was first written; **the sequence below now
+covers the complete, finished project (H0 through Module 09 and both post-hoc audits)**,
+corrected during the final consistency audit rather than left describing only the first
+module. Scripts are numbered in execution order within each module; diagnostic/feasibility/
+audit scripts (sanity checks, timing checks, redundancy checks) are marked as such below —
+they produce console output referenced in the corresponding module's README but are not
+required to regenerate any committed `results/*` file or figure, and can be skipped for a
+minimal reproduction.
 
 ```bash
 git clone <repo> && cd melanoma-neutrophil-icb
@@ -254,14 +273,56 @@ Rscript --no-restore --no-save -e 'renv::restore()'
 Rscript --no-restore --no-save 02_dataset_audit/01_download_data.R
 
 # 3. H0 — dataset audit. GSE120575's script decompresses and parses its matrix
-#    (~36 min, one-time; cached to data/processed/ as .rds thereafter). Both
-#    scripts write their results to results/*.csv and results/*.rds.
+#    (~36 min, one-time; cached to data/processed/ as .rds thereafter).
 Rscript --no-restore --no-save 02_dataset_audit/02_h0_gse120575.R
 Rscript --no-restore --no-save 02_dataset_audit/03_h0_gse72056.R
+Rscript --no-restore --no-save 02_dataset_audit/04_figure1.R
+
+# 4. H1 — recruitment discovery screen (03_recruitment/00 and 02 are diagnostic
+#    sanity checks, skippable for a minimal reproduction).
+Rscript --no-restore --no-save 03_recruitment/01_compartment_audit.R
+Rscript --no-restore --no-save 03_recruitment/03_h1_discovery_screen.R
+Rscript --no-restore --no-save 03_recruitment/04_figure2.R
+# Post-hoc audits (added 2026-08-02, after independent peer review — see CHANGELOG.md):
+Rscript --no-restore --no-save 03_recruitment/05_neutrophil_specificity_audit.R
+Rscript --no-restore --no-save 03_recruitment/06_h1_therapy_sensitivity.R
+
+# 5. H2 — cellular sources (01_h2_sanity_check.R is diagnostic, skippable).
+Rscript --no-restore --no-save 04_cellular_sources/02_h2_compartment_attribution.R
+Rscript --no-restore --no-save 04_cellular_sources/03_figure3.R
+
+# 6. H3 (05_neutrophil_states) — omitted per H0's decision-tree branch; no script exists.
+
+# 7. H4 — regulatory coherence and communication. Requires decoupleR, liana, and the
+#    CollecTRI network resolved via OmniPath's REST API (see Package management above
+#    for the Ensembl-outage workaround; 00_tool_smoke_test.R, 02_h4_sanity_check.R,
+#    03b_h4_audit.R, 05b/05c audit scripts, and 06_h4_lr_feasibility.R/06b_method_timing.R
+#    are diagnostic, skippable for a minimal reproduction).
+Rscript --no-restore --no-save 06_regulation_communication/01_collectri_resolved.R
+Rscript --no-restore --no-save 06_regulation_communication/03_h4_tf_activity.R
+Rscript --no-restore --no-save 06_regulation_communication/03c_h4_module_clustering.R
+Rscript --no-restore --no-save 06_regulation_communication/05_h4_secondary_compartment_tf_activity.R
+Rscript --no-restore --no-save 06_regulation_communication/07_h4_lr_communication.R
+Rscript --no-restore --no-save 06_regulation_communication/07b_h4_lr_suppression_enrichment.R
+Rscript --no-restore --no-save 06_regulation_communication/04_figure4.R
+
+# 8. H5 — independent-cohort validation and literature concordance. Requires readxl
+#    and org.Hs.eg.db (see Package management above; 03_h5_join_key_and_mapping_check.R
+#    is diagnostic, skippable).
+Rscript --no-restore --no-save 07_validation_concordance/01_download_data.R
+Rscript --no-restore --no-save 07_validation_concordance/02_h5_dataset_audit.R
+Rscript --no-restore --no-save 07_validation_concordance/04_h5a_gene_replication.R
+Rscript --no-restore --no-save 07_validation_concordance/06_h5b_tf_module_replication.R
+Rscript --no-restore --no-save 07_validation_concordance/07_h5c_literature_concordance.R
+Rscript --no-restore --no-save 07_validation_concordance/05_figure5.R
+
+# 9. 08_experimental_translation — no computation, README only, nothing to run.
+
+# 10. 09_synthesis — Figure 6, built entirely from already-committed result tables above.
+Rscript --no-restore --no-save 09_synthesis/01_figure6_synthesis_model.R
 ```
 
-Scripts are numbered in execution order within each module. `02_dataset_audit` was
-consolidated from seven scripts (debugging iterations accumulated during development) to
-three, verified byte-for-byte against the original results before the originals were removed
-— see `CHANGELOG.md`, "Script consolidation." Marker definitions and detection logic shared by
-both H0 scripts live in `R/neutrophil_markers.R`.
+`02_dataset_audit` was consolidated from seven scripts (debugging iterations accumulated
+during development) to three, verified byte-for-byte against the original results before the
+originals were removed — see `CHANGELOG.md`, "Script consolidation." Marker definitions and
+detection logic shared by both H0 scripts live in `R/neutrophil_markers.R`.

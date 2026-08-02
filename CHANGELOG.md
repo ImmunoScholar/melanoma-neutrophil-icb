@@ -1,5 +1,49 @@
 # Changelog
 
+## 2026-08-02 — Final whole-repository consistency audit and project freeze
+
+Per `CONTINUATION_BRIEF.md` §8 Step 3, performed after Category B (above): re-read every
+module README (`01_background` through `09_synthesis`), `results/evidence_ledger.tsv` in full,
+this `CHANGELOG.md`, `REPRODUCIBILITY.md`, all six committed figures, the complete git log
+(51 commits), `git status --porcelain`, and `renv::status()`.
+
+**Found and fixed (two items, both documentation-only, no analysis touched):**
+1. Root `README.md`'s own summary of `09_synthesis` (in the Status section) still read "H1
+   (Moderate) and H2 primary (Moderate) establish a two-axis recruitment/organisation
+   programme" — a paraphrase written before Category B that was not updated when
+   `09_synthesis/README.md` itself was retitled to "immune-compartment signalling programme —
+   not neutrophil-specific." Fixed to match, with a cross-reference to addendum #1.
+2. `REPRODUCIBILITY.md`'s **Figure regeneration** and **Fresh-clone reproduction** sections
+   had not been updated since H0 was the only completed module — the fresh-clone bash sequence
+   stopped after H0's two scripts, and the figure-regeneration section was still marked
+   "(pending)," despite the project now being complete through Module 09 with six committed
+   figures. This predates Category B and was not something either A1, A2, or the Category B
+   pass touched — caught only by this final whole-repository read-through, which is exactly
+   why this audit step exists as a separate, deliberate pass rather than being assumed covered
+   by the preceding, narrower changes. Fixed: both sections now cover the complete project
+   (all module scripts in execution order, diagnostic/audit scripts explicitly marked as
+   skippable, a per-figure dependency table for all six figures).
+
+**Checked and confirmed already consistent (no changes needed):**
+- `results/evidence_ledger.tsv`: 9 columns, 9 data rows + header, structurally intact; every
+  grade/direction matches its originating module's Conclusion section and `09_synthesis`'s
+  evidence map.
+- `02_dataset_audit/README.md` and `05_neutrophil_states/README.md` (both untouched by Category
+  B): no stale "tumour-derived" or unqualified neutrophil-recruitment language present.
+- All six figures (`figures/*.png`/`*.svg`) render from already-verified scripts; none were
+  regenerated during Category B (a deliberate choice, logged there), and none contains title
+  text contradicting the revised framing.
+- Full git history (51 commits, `2123a79`..`1f999dc`) is linear, no rewrites; `git status
+  --porcelain` empty; `renv::status()` reports no issues.
+
+**Project status: complete and frozen.** All nine planned modules
+(`01_background`–`09_synthesis`) are finished, their claims are aligned with their evidence
+(Category B), two evidence-grounded post-hoc audits (A1, A2) were incorporated rather than
+left as open review comments, and this final audit found the repository internally
+consistent apart from the two documentation gaps above, both now fixed. No further module,
+analysis, or wording change is anticipated; any future work belongs in a new, separate
+project phase, not a continuation of this one.
+
 ## 2026-08-02 — Category B: claims-versus-evidence wording alignment pass
 
 **Not a new analysis, no evidence grade changed, no result reinterpreted** — this is a single,

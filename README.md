@@ -193,8 +193,9 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   synthesis (Section 2 of `09_synthesis/README.md`) is organized in the fixed order
   Observation -> Interpretation -> Biological hypothesis -> Clinical implication throughout,
   so no statement outruns its supporting grade: H1 (Moderate) and H2 primary (Moderate)
-  establish a two-axis recruitment/organisation programme (myeloid/NK chemotactic; lymphocyte
-  organisational); H4 primary (Moderate) shows this is accompanied by a regulatorily coherent,
+  establish a two-axis immune-compartment signalling programme — not neutrophil-specific, see
+  `03_recruitment/README.md` addendum #1 — (myeloid/NK chemotactic; lymphocyte organisational);
+  H4 primary (Moderate) shows this is accompanied by a regulatorily coherent,
   honestly-characterized TF layer (Meff=31.3 independent programs, not 56); H5's confirmatory
   tests (H5a/H5b) found the non-LTB components do not clear this project's own pre-declared
   external-replication bar (Negative finding, concentrated specifically in GSE91061), which
