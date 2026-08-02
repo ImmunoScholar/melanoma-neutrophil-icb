@@ -1,0 +1,9 @@
+"gene","in_raw_matrix","in_go_chemokine_cytokine_growthfactor_panel","detect_rate_pct_of_19_patients","passes_h1_20pct_detection_filter","in_h1_tested_35_gene_table"
+"CXCL1",TRUE,TRUE,0,FALSE,FALSE
+"CXCL2",TRUE,TRUE,10.5,FALSE,FALSE
+"CXCL3",TRUE,TRUE,5.3,FALSE,FALSE
+"CXCL5",TRUE,TRUE,0,FALSE,FALSE
+"CXCL6",TRUE,TRUE,0,FALSE,FALSE
+"PPBP",TRUE,TRUE,0,FALSE,FALSE
+"CXCL8",FALSE,FALSE,NA,NA,FALSE
+"CSF3",TRUE,TRUE,0,FALSE,FALSE

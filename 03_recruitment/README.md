@@ -72,6 +72,40 @@ covariate; this table is retained as an explicit caveat rather than adjusted awa
 5. **Validating experiment.** Deferred to `08_experimental_translation`, once findings from
    subsequent modules are in and can be evaluated together rather than gene-by-gene here.
 
+**Post-hoc audit addendum (2026-08-02, added after independent peer review; a dataset
+measurement-capacity audit, not a new discovery finding).** An independent review of the whole
+project raised a specific, checkable question: are LTB, CCL3, CCL4, and CXCL13 — the genes H1
+actually found — genuinely *neutrophil*-recruitment factors, or is "neutrophil recruitment"
+being used more loosely than the underlying biology supports? None of the four is a canonical
+neutrophil chemoattractant (LTB/CXCL13 are lymphoid-organisation/TLS factors; CCL3/CCL4 signal
+via CCR1/CCR5/CCR8, not the CXCR1/2 axis). `03_recruitment/05_neutrophil_specificity_audit.R`
+checked this directly, using **only** H1's own already-computed panel-construction and
+detection-filter logic (reproduced exactly, `stopifnot`-verified against H1's own committed
+327-gene panel and 35-gene detection counts before checking anything new) — no gene was tested
+against the response labels, no p-value was computed, this is a data-availability audit in the
+same category as H0, not a new hypothesis test:
+
+- Of the 8 canonical neutrophil chemoattractants checked (CXCL1, CXCL2, CXCL3, CXCL5, CXCL6,
+  PPBP/CXCL7, CXCL8, CSF3 — the ELR⁺-CXC/CXCR1-2 axis plus G-CSF), **CXCL8 is absent from the
+  expression matrix entirely**; the other 7 are present and are members of H1's 327-gene panel,
+  but **all 7 fail H1's own 20%-detection filter by a wide margin** (5 of 7 detected in 0/19
+  patients; the other 2 in 1/19 and 2/19). **Zero of the 8 ever entered H1's tested 35-gene
+  table.** Full results: `results/neutrophil_chemoattractant_panel_audit.csv`.
+- **Interpretation:** this is not an ambiguous or borderline result. Read alongside H0's own
+  finding (near-zero neutrophil-marker co-occurrence at the cell level in this exact dataset,
+  `02_dataset_audit/README.md`), it is a second, independent line of evidence for the *same*
+  underlying constraint, at a different level: if the cells that predominantly produce this
+  chemoattractant repertoire are depleted by CD45⁺-sorting plus Smart-seq2 plate-picking, the
+  transcripts they would produce should also be near-undetectable in pseudobulk — which is
+  exactly what is observed. This is not itself a new biological finding about melanoma; it
+  corroborates H0's protocol-driven depletion conclusion and defines what this dataset could
+  and could not measure.
+- **Scope consequence for H1 (stated plainly, not softened):** H1's actual discovered
+  programme cannot be described as "neutrophil recruitment" — the canonical neutrophil-
+  recruitment repertoire was never statistically testable in this data, for the same
+  protocol-driven reason H0 already established at the cell level. This is carried into
+  `09_synthesis`'s revised framing of the project's central question and title.
+
 ## Limitations
 
 Per the Negative Results Policy, both the confound and the panel attrition below are stated
@@ -91,6 +125,16 @@ plainly, not minimised.
 - **Modest sample size** (n=19) is typical for single-cell-derived clinical cohorts of this
   kind (comparable to the original Sade-Feldman analysis of the same data) but limits power
   for effects smaller than what's reported here.
+- **H1's programme is not neutrophil-specific, and this dataset cannot test whether it is.**
+  The post-hoc audit above (`05_neutrophil_specificity_audit.R`) found that none of the 8
+  canonical neutrophil chemoattractants (CXCL1/2/3/5/6, PPBP, CXCL8, CSF3) clears H1's own
+  detection filter — CXCL8 is absent from the matrix entirely, the other 7 are detected in at
+  most 2 of 19 patients. LTB, CCL3, CCL4, and CXCL13 — the genes H1 actually found — are real,
+  patient-level, multiply-corrected findings, but they are not evidence of a neutrophil-
+  recruitment programme specifically; they describe a broader lymphoid-organisation/myeloid-NK
+  chemotactic signature. This limitation is not adjustable within this dataset (same
+  protocol-driven constraint as H0) and is carried into how the project's central question and
+  title are framed in `09_synthesis`.
 
 ## Conclusion
 

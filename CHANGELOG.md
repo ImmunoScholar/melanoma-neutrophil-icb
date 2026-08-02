@@ -1,5 +1,44 @@
 # Changelog
 
+## 2026-08-02 — Post-hoc audit: canonical neutrophil-chemoattractant detectability (A1)
+
+**Not a new hypothesis test, no new evidence-ledger row** — this documents a data-availability
+audit performed in response to an independent peer review of the full project (conducted
+deliberately as a role-switch: Claude reviewed the finished repository as a skeptical outside
+reviewer rather than its own architect). The review's single highest-priority concern was
+construct validity: H1's discovered genes (LTB, CCL3, CCL4, CXCL13) are not canonical
+neutrophil chemoattractants, so "neutrophil recruitment" in the project's central question and
+title was an asserted label, never an empirically checked one.
+
+**Method** (`03_recruitment/05_neutrophil_specificity_audit.R`): a fixed, pre-defined 8-gene
+canonical neutrophil-chemoattractant panel (CXCL1, CXCL2, CXCL3, CXCL5, CXCL6, PPBP/CXCL7,
+CXCL8, CSF3 — the ELR⁺-CXC/CXCR1-2 axis plus G-CSF; receptors excluded by the same
+GO-ligand-activity-panel logic that already excluded CXCR1/2/Guo 2025's receptor markers
+elsewhere in this project) was checked against H1's own already-computed panel-construction and
+detection-filter logic, reproduced exactly from `03_h1_discovery_screen.R` and verified via
+`stopifnot` to reproduce H1's own committed 327-gene panel and 35-gene detection count before
+checking anything new. **No gene was tested against the response labels; no p-value was
+computed anywhere in this script** — this is a retrospective inspection of measurement
+capacity, in the same category as H0, not a new discovery analysis, and does not violate this
+project's discovery discipline (no gene added to or removed from any tested panel).
+
+**Result**: CXCL8 is absent from the GSE120575 matrix entirely. The other 7 canonical
+neutrophil chemoattractants are present and are members of H1's 327-gene panel, but all 7 fail
+H1's own 20%-detection filter by a wide margin (5 of 7 detected in 0/19 patients; the remaining
+2 in 1/19 and 2/19). Zero of the 8 ever entered H1's tested 35-gene table. Full result:
+`results/neutrophil_chemoattractant_panel_audit.csv`.
+
+**Interpretation and disposition** (decided explicitly, not defaulted): this is **not** treated
+as a new biological finding or given its own evidence-ledger row. It is documented in
+`03_recruitment/README.md`'s Interpretation and Limitations sections as methodological support
+for correctly scoping H1's own conclusion — H1's programme is real and stands at its existing
+Moderate grade, but it is not a neutrophil-recruitment programme specifically, and this dataset
+cannot test whether one exists (same protocol-driven constraint as H0, now confirmed at the
+transcript level as well as the cell level). This finding will be cited in `09_synthesis` to
+justify a Category-B (wording-only) revision to the project's central question and title —
+tracked separately as its own logged change once implemented, not folded into this entry.
+
+
 Project architecture was frozen on 2026-08-01 after three design-refinement passes. From that
 point, this file records every deviation from the frozen specification, with the technical or
 biological blocker that forced it and the justification for the alternative chosen. Additions
