@@ -106,6 +106,45 @@ same category as H0, not a new hypothesis test:
   protocol-driven reason H0 already established at the cell level. This is carried into
   `09_synthesis`'s revised framing of the project's central question and title.
 
+**Post-hoc audit addendum #2 (2026-08-02, added after independent peer review; a robustness
+check on an already-tested result, not a new discovery finding).** The same review raised a
+second, checkable concern: H1, H2's primary test, and H4's primary test all run on the
+identical 19-patient cohort and share the identical, already-disclosed therapy-type confound
+(anti-PD1 monotherapy skews non-responder; anti-CTLA4+PD1 combination skews responder) — so
+they are not three independent confirmations of one signal, they are three views of one
+cohort's one confound. `03_recruitment/06_h1_therapy_sensitivity.R` tested this directly for
+H1's own 4 hits: the exact, already-committed 327-gene panel and 35-gene detection-filter
+result were reused unchanged (`stopifnot`-verified), and the identical `limma` model was
+refit with therapy type added as a covariate. No gene was added to or removed from the tested
+panel; this changes only the model, not the discovery.
+
+- **Therapy type has three levels in this cohort, not two as the confound table above might
+  suggest**: anti-CTLA4 alone (n=2), anti-CTLA4+PD1 (n=5), anti-PD1 (n=12) — verified by
+  printing the actual contingency table rather than assumed. All 19 patients had a usable
+  label (0 dropped from the adjusted model).
+- **Result**: all 4 original hits keep the same direction as the unadjusted model (no sign
+  reversals). **LTB remains significant** after adjustment (FDR 0.0034, comfortably <0.05;
+  effect size −0.62 vs. the original −0.72). **CCL3, CCL4, and CXCL13 no longer clear
+  FDR<0.05** after adjustment (→0.095, 0.108, 0.109 respectively) — but their point estimates
+  are largely preserved (CCL3: 0.753→0.735; CCL4: 0.731→0.644; CXCL13: 0.864→0.755), so this
+  reads as a loss of statistical power from the adjustment, not a collapsed effect. The
+  significant-gene set also reshuffles rather than only shrinking: TYMP (FDR 0.10 originally)
+  becomes newly significant (FDR 0.038) post-adjustment. Full comparison:
+  `results/h1_therapy_sensitivity_comparison.csv`.
+- **A real limitation of this check itself, stated plainly**: the adjusted model spends two
+  additional degrees of freedom (residual df drops from 17 to 15) on a 3-level covariate where
+  one level has only 2 patients. This check cannot cleanly separate "these three genes'
+  original significance was partly confound-inflated" from "this specific covariate adjustment
+  is itself underpowered at n=19" — both are consistent with what is observed, and this
+  analysis does not adjudicate between them.
+- **A convergent pattern across two independent, unrelated checks**: LTB is the one hit robust
+  to *both* H5a's external-cohort replication (direction-consistent in GSE78220 and GSE91061,
+  `07_validation_concordance/README.md`) *and* this therapy-adjustment. CCL3, CCL4, and CXCL13
+  are fragile to *both* (each reverses direction in GSE91061 per H5a; none survives
+  therapy-adjustment here). Two unrelated methods pointing at the same asymmetry within H1's
+  four hits is itself informative, stated as a factual convergence, not additional evidence
+  weight for either check individually.
+
 ## Limitations
 
 Per the Negative Results Policy, both the confound and the panel attrition below are stated
@@ -113,6 +152,13 @@ plainly, not minimised.
 
 - **Therapy-type confound**, described above under Analysis/Evidence — not adjustable given
   sample size, retained as an explicit limitation on causal interpretation.
+- **H1's 4 hits are not equally robust to this confound.** The post-hoc therapy-adjustment
+  audit above found LTB survives FDR<0.05 after adjustment (effect size nearly unchanged);
+  CCL3, CCL4, and CXCL13 do not, though their effect sizes/directions are largely preserved,
+  consistent with a power loss from the adjustment rather than a collapsed effect. The
+  adjustment itself is imperfect (one therapy level has only 2 patients), so this cannot
+  cleanly separate genuine confound-inflation from adjustment-driven power loss — both remain
+  live possibilities, not adjudicated here, and not resolvable within this sample size.
 - **Substantial panel attrition**: 292 of 327 candidate genes (89%) were excluded by the
   pre-specified detection filter before testing. This reflects real sensitivity limits of
   Smart-seq2 pseudobulk averaged across a T-cell-dominated sample (69% of cells, see
@@ -138,11 +184,24 @@ plainly, not minimised.
 
 ## Conclusion
 
-**Discovery screen complete. Evidence grade: Moderate.** Patient-level statistics and
-multiple-testing correction are satisfied; the top finding (LTB) is concordant with an
-independent published mechanism. Grade is capped at Moderate rather than Strong because H1 has
-no cross-dataset replication of its own — that is explicitly H5's role, not a gap in this
-module. This grade will be revisited once H5 completes.
+**Discovery screen complete. Evidence grade: Moderate — but not uniformly across the four
+hits, stated explicitly rather than left implicit in one grade.** Patient-level statistics and
+multiple-testing correction are satisfied in the original test; the top finding (LTB) is
+concordant with an independent published mechanism. Grade is capped at Moderate rather than
+Strong because H1 has no cross-dataset replication of its own — that was H5's role, and has
+since completed (`07_validation_concordance/README.md`).
+
+Two independent post-hoc checks — H5a's external-cohort replication and this module's own
+therapy-type confound-adjustment (`06_h1_therapy_sensitivity.R`, addendum #2 above) — converge
+on the same asymmetry within H1's 4 hits: **LTB is robust to both** (direction-consistent
+across GSE78220/GSE91061 in H5a; remains FDR<0.05 after therapy-adjustment here, effect size
+nearly unchanged). **CCL3, CCL4, and CXCL13 are fragile to both** (each reverses direction in
+GSE91061 in H5a; none clears FDR<0.05 after therapy-adjustment here, though their point
+estimates are largely preserved — consistent with a power loss from the adjustment, not a
+collapsed effect, and the adjustment itself is imperfect, see Limitations). The module's
+single Moderate grade is retained as a whole — nothing here invalidates the original,
+pre-registered test — but confidence in the four hits is no longer treated as uniform, and
+this distinction is carried into `09_synthesis`.
 
 No hypothesis is rejected or confirmed at this stage regarding the specific biological
 mechanism; H1 establishes *that* a signal exists and *what it ranks as*, unbiased. Its

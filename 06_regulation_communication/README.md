@@ -301,6 +301,11 @@ omitted because they complicate a clean narrative.
   closer to Meff≈31 independent signals / a handful of correlated regulatory modules.
 - **No cross-dataset replication of its own**, same constraint as H1/H2 — GSE72056 was scoped
   to H0 replication only. External validation remains H5's role.
+- **This module shares H1/H2's identical 19-patient cohort and therapy-type confound, not a
+  new or independent limitation.** A post-hoc check (`03_recruitment/README.md` addendum #2)
+  found H1's LTB hit robust to therapy-covariate adjustment while CCL3/CCL4/CXCL13 were not —
+  H1, H2 primary, and H4 primary should not be read as three independent confirmations of one
+  signal; they are three analyses of the same cohort sharing the same confound structure.
 - **TF activity is inferred, not measured.** `decoupleR::run_ulm()` estimates activity from
   target-gene expression patterns; it is not a direct measurement of TF binding or occupancy.
 

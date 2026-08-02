@@ -110,6 +110,12 @@ reported as informative, not omitted.
   null finding -- excluded from substantive interpretation.
 - **No cross-dataset replication available**, same constraint as H1 -- GSE72056 was scoped to
   H0 replication only. External validation remains H5's role.
+- **This module inherits H1's therapy-type confound and its uneven robustness across the 4
+  hits, not a new or independent limitation.** A post-hoc check (`03_recruitment/README.md`
+  addendum #2) found LTB (attributed here to B cell) robust to therapy-adjustment, while
+  CCL3 (Myeloid) and CCL4 (NK) are not -- H2's compartment attribution for CCL3/CCL4 is
+  therefore built on the less robust half of H1's discovery, stated here rather than assumed
+  unaffected.
 - **The near-universal significance of the primary test (34/35 genes) is expected, not
   surprising, given that four genuinely distinct immune lineages were compared** -- this
   finding's value is in which compartment dominates for each gene, not in the fact of

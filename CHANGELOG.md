@@ -1,5 +1,46 @@
 # Changelog
 
+## 2026-08-02 — Post-hoc robustness check: therapy-type confound adjustment on H1 (A2)
+
+**Not a new hypothesis test, no new evidence-ledger row** — same peer-review response as A1
+above. The review's second material concern: H1, H2's primary test, and H4's primary test all
+run on the identical 19-patient cohort and share the identical, already-disclosed therapy-type
+confound, so they should not be read as three independent confirmations of one signal.
+
+**Method** (`03_recruitment/06_h1_therapy_sensitivity.R`): H1's exact, already-committed
+327-gene panel and 35-gene detection-filter result were reused unchanged (`stopifnot`-verified
+against H1's committed counts before touching anything), and the identical `limma` model was
+refit with therapy type added as a covariate. The actual therapy×response contingency table
+was printed and inspected before building anything on it (verify, don't assume) — therapy has
+**three** levels in this cohort, not two as earlier prose implied: anti-CTLA4 alone (n=2),
+anti-CTLA4+PD1 (n=5), anti-PD1 (n=12). All 19 patients had a usable label. No gene was added
+to, or removed from, the tested panel; only the model changed.
+
+**Result**: all 4 original H1 hits retain the same direction after adjustment (no sign
+reversals). LTB remains significant (FDR 0.0034, effect size −0.62 vs. original −0.72). CCL3,
+CCL4, and CXCL13 no longer clear FDR<0.05 (→0.095/0.108/0.109) though their point estimates
+are largely preserved (e.g. CCL3: 0.753→0.735) — read as a power loss from the adjustment
+(residual df 17→15, spent on a 3-level covariate with one 2-patient level), not a collapsed
+effect. The significant-gene set also reshuffles, not just shrinks: TYMP becomes newly
+significant (FDR 0.10→0.038) post-adjustment. Full comparison:
+`results/h1_therapy_sensitivity_comparison.csv`.
+
+**A limitation of the check itself, disclosed rather than glossed over**: this adjustment
+cannot cleanly separate "CCL3/CCL4/CXCL13's original significance was partly confound-
+inflated" from "this specific covariate adjustment is underpowered at n=19" — both remain
+live, unadjudicated possibilities.
+
+**A convergent pattern across two independent, unrelated checks, stated as a factual
+observation**: LTB is robust to both H5a's external-cohort replication and this
+therapy-adjustment; CCL3/CCL4/CXCL13 are fragile to both. **Disposition** (project owner's
+explicit instruction): H1's Conclusion is tightened to state this asymmetry explicitly rather
+than leave it implicit in a single Moderate grade — the letter grade itself is unchanged (this
+is a robustness caveat on an already-valid test, not a new finding warranting reassessment).
+Cross-referenced (one sentence each, not reopened) in `04_cellular_sources/README.md` and
+`06_regulation_communication/README.md`'s Limitations, since both build on the identical
+cohort/confound. Will be cited in `09_synthesis` when the Category B wording revision is
+implemented.
+
 ## 2026-08-02 — Post-hoc audit: canonical neutrophil-chemoattractant detectability (A1)
 
 **Not a new hypothesis test, no new evidence-ledger row** — this documents a data-availability
