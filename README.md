@@ -31,7 +31,7 @@ substantive finding in `02_dataset_audit/README.md`, not as a setback.
 |---|---|---|---|---|
 | H0 | Neutrophil representation in public melanoma scRNA-seq is determined by protocol and QC, not tumour biology | `02_dataset_audit` | 1 | **Complete — supported, Strong** |
 | H1 | ICB-resistant melanomas exhibit enhanced neutrophil-recruitment signalling programmes | `03_recruitment` | 2 | **Complete — Moderate** |
-| H2 | Neutrophil-recruiting signalling is compartment-restricted rather than uniformly distributed | `04_cellular_sources` | 3 | Not started |
+| H2 | Neutrophil-recruiting signalling is compartment-restricted rather than uniformly distributed | `04_cellular_sources` | 3 | Analysis complete, **Moderate/Exploratory** — Figure 3 pending |
 | H3 | TANs occupy reference-defined functional states; resistance associates with immunosuppressive rather than antigen-presenting programmes | `05_neutrophil_states` | — | **Omitted** — H0 established <20 recoverable neutrophils; see `CHANGELOG.md` |
 | H4 | The recruitment programme is regulatorily coherent and its intercellular communication converges on T-cell suppression | `06_regulation_communication` | 4 | Not started |
 | H5 | The programme generalises to independent cohorts and agrees quantitatively with published TAN biology | `07_validation_concordance` | 5 | Not started |
@@ -58,7 +58,16 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   H5's independent-cohort validation, not a gap in H1 itself. Full
   ranked table and stated limitations (therapy confound, panel attrition) in
   `03_recruitment/README.md`.
-- **H2–H5: not started.**
+- **H2 (`04_cellular_sources`): analysis complete, Figure 3 pending.** Primary test
+  (Moderate): 34 of 35 H1-tested genes show significant compartment restriction; H1's hits
+  decompose into a myeloid/NK chemotactic axis (CCL3, TYMP, GPI, CCL4, CCL4L2, CD320) and a
+  lymphocyte organisational axis (LTB from B cells, CXCL13 from T cells). Secondary test
+  (Exploratory): regulation can be compartment-specific independent of where a gene is most
+  abundant. Open gap, stated not hidden: Myeloid could not be tested for response-association
+  at adequate power (3 usable responder patients), so CCL3/TYMP's myeloid origin for their H1
+  response-association remains unconfirmed. Full results and limitations in
+  `04_cellular_sources/README.md`.
+- **H3–H5: H3 omitted (see above); H4–H5 not started.**
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every
 post-freeze deviation and its justification.
