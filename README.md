@@ -34,7 +34,7 @@ substantive finding in `02_dataset_audit/README.md`, not as a setback.
 | H2 | Neutrophil-recruiting signalling is compartment-restricted rather than uniformly distributed | `04_cellular_sources` | 3 | **Complete — Moderate/Exploratory** |
 | H3 | TANs occupy reference-defined functional states; resistance associates with immunosuppressive rather than antigen-presenting programmes | `05_neutrophil_states` | — | **Omitted** — H0 established <20 recoverable neutrophils; see `CHANGELOG.md` |
 | H4 | The recruitment programme is regulatorily coherent and its intercellular communication converges on T-cell suppression | `06_regulation_communication` | 4 | **Complete — Moderate (TF-activity) / Negative finding (communication)** |
-| H5 | The programme generalises to independent cohorts and agrees quantitatively with published TAN biology | `07_validation_concordance` | 5 | Not started |
+| H5 | The programme generalises to independent cohorts and agrees quantitatively with published TAN biology | `07_validation_concordance` | 5 | **In progress — H5a complete (Exploratory/Negative findings)** |
 | — | Synthesis (not a hypothesis test) | `09_synthesis` | 6 | Not started |
 
 Every module follows: **Hypothesis → Analysis → Evidence → Interpretation → Limitations →
@@ -54,8 +54,9 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   Patient-level pseudobulk (19 pre-treatment patients, GSE120575), unbiased screen of a
   327-gene GO-sourced chemokine/cytokine/growth-factor panel. 4 genes significant at FDR<0.05,
   top finding (LTB) concordant with published tertiary lymphoid structure biology — concordance,
-  not independent validation; that remains H5's objective. Grade capped at Moderate pending
-  H5's independent-cohort validation, not a gap in H1 itself. Full
+  not independent validation. H5a has now tested independent-cohort replication for all 4 hits
+  (see below) — H1's own Moderate grade is unchanged by that result, reported separately in
+  `07_validation_concordance/README.md`, not by reopening this module. Full
   ranked table and stated limitations (therapy confound, panel attrition) in
   `03_recruitment/README.md`.
 - **H2 (`04_cellular_sources`): complete.** Primary test
@@ -97,7 +98,21 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   Figure 4 now integrates both components (Panel A: TF-activity; Panel B: communication,
   with the statistical result and the descriptive observation visually and textually
   distinguished). Full results and limitations in `06_regulation_communication/README.md`.
-- **H5: not started.**
+- **H5 (`07_validation_concordance`): in progress.** H5a (confirmatory gene-level
+  replication) complete. Pre-registered in `CHANGELOG.md` before any result existed: H1's 4
+  FDR<0.05 hits tested in two independent bulk cohorts (GSE78220, Hugo et al., n=27
+  pre-treatment; GSE91061, Riaz et al., n=49 pre-treatment usable), statistical method chosen
+  per cohort's verified data type (`limma` on FPKM for GSE78220; `edgeR`/`voom` on raw counts
+  for GSE91061). Replication verdict required BOTH concordant direction AND significance,
+  fixed in advance. Result: **LTB — Exploratory** (direction-consistent in both cohorts,
+  significant in neither). **CCL3, CCL4, CXCL13 — Negative finding** (each reverses direction
+  in GSE91061 specifically). Reported exactly as the pre-registration specifies, per the
+  Negative Results Policy — not reinterpreted, not explained away. Pre-declared caveats
+  (GSE91061's small Responder group, n=10; differing therapy composition across all three
+  cohorts) are stated as context fixed before this analysis was run. H1's own conclusions and
+  grade are unchanged. Full results, Figure 5, and limitations in
+  `07_validation_concordance/README.md`. **Not yet run**: H5b (TF-module replication), H5c
+  (published TAN literature concordance, exploratory and capped a priori).
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every
 post-freeze deviation and its justification.
