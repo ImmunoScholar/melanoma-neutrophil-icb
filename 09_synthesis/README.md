@@ -11,6 +11,20 @@ read or re-derived (by the exact method its source module already used and commi
 evidence-ledger row is added by this module** — it integrates the existing ledger, it does not
 extend it.
 
+**Revised 2026-08-02** after an independent peer review of the completed project and two
+evidence-grounded post-hoc audits (`03_recruitment/README.md` addenda #1–#2; `CHANGELOG.md`).
+This is a claims-versus-evidence wording alignment, not a reinterpretation: no analysis below
+was rerun, no evidence grade changed beyond what those two audits already justified. Two
+corrections carried through this entire module as a result: **(1)** the discovered programme
+(LTB, CCL3, CCL4, CXCL13) is not neutrophil-specific — the canonical neutrophil-recruitment
+chemoattractant repertoire is undetectable in this dataset (0/8 clear H1's own detection
+filter, addendum #1) — so it is described here as an immune-compartment secretory/regulatory
+programme, not a "neutrophil recruitment" programme. **(2)** H1, H2's primary test, and H4's
+primary test are not three independent confirmations of one signal — they share one
+19-patient cohort and one disclosed therapy-type confound, and a post-hoc confound-adjustment
+(addendum #2) found this matters unevenly across H1's own four hits (LTB robust; CCL3, CCL4,
+CXCL13 fragile).
+
 ---
 
 ## 1. Evidence map
@@ -52,9 +66,15 @@ neutrophils.
 **Clinical implication.** None drawn — this is a data-availability finding, not a biological
 claim. Its consequence for the rest of this project is structural: single-cell neutrophil-state
 biology (H3) could not be assessed, and every downstream finding (H1-H5) is necessarily about
-the CD45+ immune infiltrate as a whole, not about neutrophils directly.
+the CD45+ immune infiltrate as a whole, not about neutrophils directly. **This constraint
+recurs at a second level (addendum #1, `03_recruitment/README.md`, added post-hoc after
+independent peer review): the canonical neutrophil-recruitment chemoattractant repertoire
+(CXCL1/2/3/5/6/8, PPBP, CSF3) is also undetectable at the transcript level in this same
+dataset — 0 of 8 clear H1's own detection filter. This is not a new biological finding; it is
+the same protocol-driven depletion H0 established at the cell level, now confirmed at the
+transcript level, and it directly scopes what H1 (below) can and cannot be said to show.**
 
-### 2.2 A two-axis recruitment/organisation programme (H1 + H2, Moderate)
+### 2.2 A two-axis immune-compartment signalling programme — not neutrophil-specific (H1 + H2, Moderate)
 
 **Observation.** Four genes differ by ICB response pre-treatment (H1, Moderate): LTB (higher in
 responders), CCL3/CCL4/CXCL13 (higher in non-responders). These decompose by cellular source
@@ -62,16 +82,31 @@ responders), CCL3/CCL4/CXCL13 (higher in non-responders). These decompose by cel
 lymphocyte-derived axis (LTB from B cells, CXCL13 from T cells) — with LTB and CXCL13 moving in
 opposite directions despite both being lymphocyte-derived (an unresolved tension, not smoothed
 over). H2's secondary result (Exploratory) adds that regulation is not always co-located with
-where a gene is most abundant.
-**Interpretation.** The recruitment programme identified by H1 is not one undifferentiated
-signal; it separates into a chemotactic axis and a lymphoid-organisational axis, each with a
-distinct, identifiable cellular source.
+where a gene is most abundant. **None of the four genes is a canonical neutrophil
+chemoattractant** (§2.1's addendum), and none is attributed to a malignant/tumour-cell
+compartment — H0 found malignant cells at ~0.04% of this dataset, too few to analyse, so H2's
+four compartments (T cell, B cell, Myeloid, NK) are all immune lineages, not tumour cells.
+**Interpretation.** This is an immune-compartment-derived signalling programme — a chemotactic
+axis and a lymphoid-organisational axis, each with a distinct, identifiable immune-cell
+source — not a demonstrated neutrophil-recruitment programme and not demonstrated to originate
+from tumour (malignant) cells. Both scope limits are stated here plainly, not implied.
 **Biological hypothesis.** LTB's direction is concordant with published tertiary-lymphoid-
 structure/lymphotoxin biology (literature-derived plausibility, not validation — see Figure 6's
 dashed edge). CXCL13's opposite direction despite the same canonical TLS association remains an
 open question this project did not resolve.
-**Clinical implication.** None stated at this stage — deferred to 2.4 once H4/H5's contribution
-is incorporated.
+**Clinical implication.** None stated at this stage — deferred to 2.5 once H4/H5's contribution
+and the confound-robustness picture are incorporated.
+
+**Robustness addendum (2.2), not part of the original H1/H2 discovery interpretation above.**
+A post-hoc therapy-type confound-adjustment (addendum #2, `03_recruitment/README.md`) — added
+because H1, H2's primary test, and H4's primary test all run on this same 19-patient cohort and
+share its identical confound, so they are three analytical lenses on one cohort, not three
+independent confirmations — found this matters unevenly across H1's four hits: **LTB remains
+significant (FDR<0.05) after adjustment, with a similar effect size; CCL3, CCL4, and CXCL13 do
+not**, though their point estimates are largely preserved (consistent with a power loss from
+the adjustment, not a collapsed effect — the check itself is imperfect, see
+`03_recruitment/README.md`). This is stated here as a fact about the discovery cohort's
+robustness, not yet as external validation — that remains H5's question, taken up in 2.4.
 
 ### 2.3 A regulatorily coherent but incompletely resolved TF programme (H4, Moderate/Exploratory)
 
@@ -123,17 +158,45 @@ Taken together, and weighted exactly by the grades in Section 1 — not by which
 recent or most striking — this project establishes an internally consistent, patient-level,
 multiply-corrected discovery finding (H1, Moderate) with a clear cellular-source decomposition
 (H2 primary, Moderate) and a coherent, honestly-characterized regulatory layer (H4 primary,
-Moderate). The programme's generalisation to independent cohorts is presently limited: two
-pre-registered confirmatory tests (H5a, H5b) found the non-LTB components do not clear the
-project's own pre-declared replication bar, and this outcome is reported with the same weight as
-any other finding, per the Negative Results Policy — it constrains the programme's external
+Moderate). **Its scope must be stated precisely, not aspirationally**: this is an
+immune-compartment-derived (T cell, B cell, Myeloid, NK) secretory and regulatory programme —
+it is not demonstrated to be neutrophil-specific (§2.1–2.2; the canonical neutrophil-
+chemoattractant repertoire is undetectable in this dataset) and it is not demonstrated to
+originate from tumour/malignant cells (malignant cells are ~0.04% of this dataset, H0). Both
+scope limits were only established after the fact, by post-hoc audits, and are stated here as
+firmly as any other finding in this project.
+
+**H1, H2's primary test, and H4's primary test are not three independent lines of evidence,
+and should not be read as such.** All three run on the identical 19-patient GSE120575 cohort
+and share its identical, disclosed therapy-type confound. They are better described as three
+complementary analytical lenses applied to one cohort — discovery (H1), cellular attribution
+(H2), and regulatory characterization (H4) — than as three separate replications. A
+confound-adjustment run directly on H1's own hits (addendum #2) found this distinction
+material, not merely theoretical: it changes which of H1's four hits remain significant once
+the shared confound is accounted for.
+
+The programme's generalisation to independent cohorts is presently limited: two pre-registered
+confirmatory tests (H5a, H5b) found the non-LTB components do not clear the project's own
+pre-declared replication bar, and this outcome is reported with the same weight as any other
+finding, per the Negative Results Policy — it constrains the programme's external
 generalisability without invalidating the internally-consistent, multiply-corrected discovery
-and attribution work that produced it (H1/H2/H4 remain Moderate; H5's results do not retroactively
-change those grades, consistent with how each module has always treated later results). LTB is
-the one component whose direction has been consistent across every cohort examined in this
-project (GSE120575, GSE78220, GSE91061), though not yet significant externally — the closest
-this project comes to a cross-cohort-consistent finding, stated at exactly that strength and no
-further.
+and attribution work that produced it (H1/H2/H4 remain Moderate; H5's results do not
+retroactively change those grades, consistent with how each module has always treated later
+results).
+
+**LTB is presented here as the one comparatively robust signal among H1's four hits, stated at
+exactly the strength this warrants and no further.** It is the only one of the four whose
+direction held across every cohort examined (GSE120575, GSE78220, GSE91061) and the only one
+that remained significant after the post-hoc therapy-confound adjustment (addendum #2) — two
+independent stress-tests, converging. This is **relative robustness among four originally
+co-equal hits, not external validation**: LTB has not reached statistical significance in
+either external cohort (H5a graded it Exploratory, not Moderate or Strong, and that grade is
+unchanged here), and its "robustness" to the confound-adjustment does not make it
+neutrophil-specific or tumour-derived — both scope limits above apply to LTB exactly as much
+as to CCL3/CCL4/CXCL13. CCL3, CCL4, and CXCL13, by contrast, are fragile to both checks
+(direction-reversal in GSE91061 per H5a; loss of significance under confound-adjustment,
+though with preserved effect sizes, per addendum #2) — a convergent, not merely repeated,
+signal of reduced confidence in these three specifically.
 
 ---
 
@@ -183,6 +246,15 @@ post hoc, by inspecting only already-committed tables — not a new discovery se
 - `results/h5c_literature_concordance.csv` (H1's panel/hits vs. Wang 2025/Guo 2025 marker
   sets): **CXCL8, CXCR1, CXCR2 do not appear** in the overlap genes of either comparison.
 
+**A fourth, more direct check now exists** (`results/neutrophil_chemoattractant_panel_audit.csv`,
+`03_recruitment/README.md` addendum #1): CXCL8 specifically is confirmed **absent from the raw
+GSE120575 expression matrix entirely** — its absence from H1's tested 35-gene table above is
+therefore not merely "didn't pass a filter," it is "not present in this dataset at all,"
+independent of any filter choice. CXCR1/CXCR2 were not checked directly in that audit (they are
+receptors, categorically outside the ligand-focused panel this project screens, same reasoning
+as below), so their absence from H1/H4/H5c's tables reflects panel scope, not a confirmed
+absence from the matrix.
+
 **This is reported strictly as a post-hoc observation about what this project's own analyses
 surfaced, not as evidence for or against the CXCL8-CXCR1/2 axis's biological role in melanoma
 ICB resistance, and not as commentary on the ongoing clinical trials.** CXCL8 was not part of
@@ -203,10 +275,33 @@ absent in melanoma ICB resistance more broadly.**
 Each item below is stated once here for a whole-project view; full detail remains in its
 originating module's own Limitations section.
 
-- **Cohort and confound structure.** All of H1/H2/H4 share the same 19-patient GSE120575
-  cohort and its therapy-type confound (anti-PD-1 monotherapy skews non-responder; anti-CTLA4+
-  PD-1 combination skews responder), not adjustable at this sample size. This confound is
-  structural to the discovery cohort, not specific to any one module.
+- **Programme scope: immune-compartment, not neutrophil-specific or tumour-derived.** Stated
+  fully in §2.1–2.2, restated here because it is the single most important scope limit in the
+  project: H1's discovered genes are not canonical neutrophil chemoattractants (0/8 detectable
+  in this dataset, `03_recruitment/README.md` addendum #1), and no finding in this project is
+  attributed to malignant/tumour cells (~0.04% of GSE120575, H0). The project's title and
+  central question were revised to reflect this (root `README.md`).
+- **Cohort and confound structure — H1/H2/H4 are one cohort, not three independent
+  confirmations.** All of H1/H2/H4 share the same 19-patient GSE120575 cohort and its
+  therapy-type confound (anti-PD-1 monotherapy skews non-responder; anti-CTLA4+PD-1
+  combination skews responder; a third category, anti-CTLA4 alone, has only 2 patients). A
+  post-hoc confound-adjustment (`03_recruitment/README.md` addendum #2) found this matters
+  materially, not just theoretically: LTB remains significant after adjustment, CCL3/CCL4/
+  CXCL13 do not (effect sizes preserved; read as a power loss from the adjustment, not a
+  collapsed effect — the adjustment itself is imperfect at this sample size, one therapy level
+  having only 2 patients). This is not adjustable further within this dataset.
+- **Temporal external validity.** The discovery cohort (GSE120575) and both validation cohorts
+  (GSE78220, GSE91061) were collected 2014–2017, predating current-era checkpoint-inhibitor
+  regimen patterns and sequencing; whether this programme's behaviour generalises to
+  contemporary ICB practice is untested and unaddressed here.
+- **Untested alternative explanations.** Tumour burden/disease stage, and clinical covariates
+  such as BRAF mutation status, LDH, or M-stage, were not available or considered as
+  alternative drivers of the response split in any module. A generic marker of more advanced
+  disease at baseline (rather than a specific recruitment/regulatory relationship) remains a
+  plausible, untested alternative explanation for part of the observed signal.
+- **H2's compartment attribution relies on the original study's own cell-type annotations**,
+  not independently re-verified in this project — standard practice for reusing public
+  single-cell data, but an inherited, not tested, assumption.
 - **External replication.** H5a/H5b's Negative findings are concentrated specifically in
   GSE91061 (the smaller-responder-group, differently-therapy-composed cohort) across two
   independent confirmatory tests — a real, reproducible pattern, reported factually (Section
@@ -233,6 +328,15 @@ This module adds no new computational result and no new evidence-ledger row. It 
 H0-H5's already-graded findings into one evidence-weighted narrative (Section 2), renders that
 structure as a single traceable figure (Section 3, Figure 6), answers the pre-registered
 CXCL8-CXCR1/2 question exactly as scoped (Section 4), and consolidates the project's stated
-limitations (Section 5). With this module complete, all nine planned modules
-(`01_background` through `09_synthesis`) are finished; the only remaining step per
-`CONTINUATION_BRIEF.md` SS8 is a final whole-project consistency audit.
+limitations (Section 5).
+
+**This module was revised once, 2026-08-02, after the project was independently reviewed as a
+completed whole.** Two post-hoc audits (addenda #1–#2, `03_recruitment/README.md`) established,
+with evidence rather than assumption, that the discovered programme is not neutrophil-specific
+and that H1/H2/H4 are one cohort analysed through complementary lenses rather than three
+independent confirmations. The project's title, central question, and this module's narrative
+were realigned to state exactly this — no analysis was rerun, and no evidence grade changed
+beyond what those two audits directly justified. With this revision complete, all nine planned
+modules (`01_background` through `09_synthesis`) are finished, and their claims are aligned
+with their evidence; the only remaining step per `CONTINUATION_BRIEF.md` SS8 is a final
+whole-project consistency audit.

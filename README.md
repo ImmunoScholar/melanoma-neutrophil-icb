@@ -1,15 +1,47 @@
-# Tumour-derived neutrophil recruitment and signalling programmes in melanoma immune checkpoint response
+# Immune-compartment secretory and regulatory programmes associated with immune checkpoint response in melanoma
+
+**Title and central question revised 2026-08-02**, after an independent peer review of the
+completed project and two evidence-grounded post-hoc audits (`03_recruitment/README.md`,
+addenda #1–#2; `CHANGELOG.md`). This is a wording-alignment revision only — no analysis was
+rerun, no evidence grade changed, and no module's tested hypothesis or result was altered.
+The original title ("Tumour-derived neutrophil recruitment and signalling programmes...") is
+preserved in `CHANGELOG.md` and in git history, not silently erased.
 
 ## Central question
 
-Which tumour-derived neutrophil recruitment and functional signalling programmes distinguish
-immune checkpoint responders from non-responders in human melanoma?
+Which immune-compartment-derived secretory and regulatory programmes distinguish immune
+checkpoint responders from non-responders in human melanoma?
+
+**Why "neutrophil recruitment" and "tumour-derived" were removed from the title (evidence, not
+caution):**
+- This project was motivated by tumour-associated-neutrophil (TAN) biology and the
+  neutrophil-to-lymphocyte ratio's clinical association with checkpoint failure (see
+  `01_background`). `02_dataset_audit` (H0) established that neutrophils are not recoverable
+  as cells in this dataset (CD45⁺-sort + Smart-seq2 plate-picking depletion). A post-hoc audit
+  (`03_recruitment/README.md` addendum #1) subsequently found that the canonical
+  neutrophil-recruitment chemoattractant repertoire (CXCL1/2/3/5/6/8, PPBP, CSF3) is **also
+  undetectable at the transcript level** in this same dataset — 0 of 8 clear H1's own
+  detection filter. H1's actually-discovered programme (LTB, CCL3, CCL4, CXCL13) is real,
+  patient-level, and multiply-corrected, but it is a lymphoid-organisational and myeloid/NK
+  chemotactic signature — **not a demonstrated neutrophil-recruitment programme**. The title
+  now describes what was measured, not what originally motivated measuring it.
+- **"Tumour-derived" is likewise not supported**: `02_dataset_audit` found malignant cells at
+  ~0.04% of GSE120575 (6 of 16,291 cells) — too few to analyse. Every finding in this project
+  (H1, H2, H4) is attributed to immune-lineage compartments (T cell, B cell, Myeloid, NK), not
+  to malignant-cell output. The programmes described here are produced *within* the tumour
+  microenvironment's immune infiltrate, not demonstrated to originate from tumour cells
+  themselves.
 
 Discovery (module `03_recruitment`) screens the full secreted chemokine/cytokine/growth-factor
 repertoire without prior restriction to any pathway. Only after the discovery ranking is fixed
 and committed does interpretation (`09_synthesis`) ask, post hoc: *does the highest-ranked
 programme converge on a therapeutically targetable axis?* No pathway is named or privileged in
-the discovery analyses.
+the discovery analyses. **H1, H2's primary test, and H4's primary test all run on the
+identical 19-patient discovery cohort and share its identical, disclosed therapy-type
+confound** (`03_recruitment/README.md` addendum #2) — they are three complementary analytical
+lenses on one cohort, not three independent confirmations of one signal; a post-hoc
+confound-adjustment found this asymmetric across H1's own hits (LTB robust; CCL3/CCL4/CXCL13
+fragile), detailed in `09_synthesis/README.md`.
 
 ## Negative Results Policy
 
@@ -41,6 +73,14 @@ Every module follows: **Hypothesis → Analysis → Evidence → Interpretation 
 Conclusion**, and every conclusion is graded Strong / Moderate / Exploratory in
 `results/evidence_ledger.tsv`.
 
+**Framing note (added 2026-08-02):** the hypothesis statements above are reproduced exactly as
+originally pre-registered and tested — they are a historical record, not rewritten to match
+the revised title. H1's tested hypothesis used "neutrophil-recruitment" as its working label;
+what H1 actually found (LTB, CCL3, CCL4, CXCL13) was subsequently audited and found not to be
+neutrophil-specific (`03_recruitment/README.md` addendum #1). This does not change what was
+tested or its result — it changes how the result should be *described*. See the revised
+Central Question above and `09_synthesis/README.md` for the corrected framing.
+
 ## Status
 
 Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
@@ -50,14 +90,19 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   CD45+ sorting plus Smart-seq2 plate-picking — single-digit recoverable candidates in both
   cohorts. This placed the project on the pre-specified `<20` branch of the failure-tolerant
   decision tree, omitting H3.
-- **H1 (`03_recruitment`): complete, Moderate grade.**
+- **H1 (`03_recruitment`): complete, Moderate grade — but not uniform across its 4 hits.**
   Patient-level pseudobulk (19 pre-treatment patients, GSE120575), unbiased screen of a
   327-gene GO-sourced chemokine/cytokine/growth-factor panel. 4 genes significant at FDR<0.05,
   top finding (LTB) concordant with published tertiary lymphoid structure biology — concordance,
   not independent validation. H5a has now tested independent-cohort replication for all 4 hits
   (see below) — H1's own Moderate grade is unchanged by that result, reported separately in
-  `07_validation_concordance/README.md`, not by reopening this module. Full
-  ranked table and stated limitations (therapy confound, panel attrition) in
+  `07_validation_concordance/README.md`, not by reopening this module. **Two post-hoc audits,
+  added after independent peer review (`03_recruitment/README.md` addenda #1–#2):** (1) the
+  canonical neutrophil-chemoattractant repertoire is undetectable in this dataset (0/8 clear
+  H1's own detection filter) — H1's programme is real but is not neutrophil-specific; (2) a
+  therapy-type confound-adjustment found LTB robust (still FDR<0.05, similar effect size) while
+  CCL3/CCL4/CXCL13 are not (effect sizes preserved, but power lost) — converging with H5a's own
+  external-replication asymmetry. Full ranked table and all stated limitations in
   `03_recruitment/README.md`.
 - **H2 (`04_cellular_sources`): complete.** Primary test
   (Moderate): 34 of 35 H1-tested genes show significant compartment restriction; H1's hits

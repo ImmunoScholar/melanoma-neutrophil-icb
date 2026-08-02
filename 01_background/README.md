@@ -62,9 +62,21 @@ evidence about the tumours.
 This constraint is the reason melanoma-specific TAN single-cell literature is sparse, and it
 redirects the question rather than defeating it. **Neutrophil recruitment is initiated by the
 tumour microenvironment**, and the cells that issue those signals — malignant, stromal and
-other myeloid compartments — are captured well by exactly the protocols that lose neutrophils.
-The recruitment programme is therefore measurable in these datasets even though its target
-population is not.
+other myeloid compartments — were expected to be captured well by exactly the protocols that
+lose neutrophils, even though their target population is not.
+
+**Addendum (2026-08-02, added after independent peer review; see `03_recruitment/README.md`
+addendum #1 and `CHANGELOG.md`):** this expectation was checked directly and only partly
+held. The immune-compartment signalling programme this study set out to measure *is*
+detectable (H1) — but the canonical neutrophil-recruitment chemoattractant repertoire
+specifically (CXCL1/2/3/5/6/8, PPBP, CSF3) is undetectable in this dataset, the same
+protocol-driven constraint as above extending to the transcript level. What H1 actually finds
+and reports is therefore an immune-compartment secretory/regulatory programme, not a
+demonstrated neutrophil-recruitment programme — reflected in this project's revised title and
+central question (root `README.md`). Malignant cells are also ~0.04% of this dataset (H0), so
+none of the sources identified (H2: T cell, B cell, Myeloid, NK) are malignant/tumour cells
+either — the signalling programme found here is produced within the tumour microenvironment's
+immune infiltrate, not demonstrated to originate from the malignant cells themselves.
 
 This is also where clinical intervention already operates: agents targeting neutrophil-
 recruitment signalling are in phase 1/2 trials in combination with anti-PD-1 in melanoma. The
@@ -79,8 +91,13 @@ signal, but the tumour-level programme underlying that association has not been 
 cell-state resolution — and cannot be approached from the neutrophil side using available
 public melanoma single-cell data.
 
-> **Which tumour-derived neutrophil recruitment and functional signalling programmes distinguish
-> immune checkpoint responders from non-responders in human melanoma?**
+> **Which immune-compartment-derived secretory and regulatory programmes distinguish immune
+> checkpoint responders from non-responders in human melanoma?**
+
+*(Revised 2026-08-02 to match root `README.md`'s central question, after the addendum above
+found the canonical neutrophil-recruitment repertoire undetectable in this dataset — see root
+`README.md` for the full justification. This section's original wording is preserved in
+`CHANGELOG.md` and git history.)*
 
 The study addresses this from the signalling-source side: which programmes are elevated in
 resistance (H1), which cellular compartments produce them (H2), whether they form a coherent

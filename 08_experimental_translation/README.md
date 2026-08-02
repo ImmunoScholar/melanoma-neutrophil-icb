@@ -14,6 +14,13 @@ stated confidence. No new biology, mechanism, or hypothesis is introduced anywhe
 module — every validation below tests exactly the finding already recorded in the
 referenced ledger row, via a more direct experimental modality, nothing more.
 
+**Wording note (added 2026-08-02, after independent peer review; see `03_recruitment/README.md`
+addendum #1 and root `README.md`):** the phrase "recruitment-programme" below refers to H1's
+discovered immune-compartment secretory programme, using the module's original working label —
+it is not a claim that the programme is neutrophil-specific, which a post-hoc audit found this
+dataset cannot support. The validation proposals themselves are unaffected by this wording
+correction.
+
 Four ledger rows meet the Moderate/Strong threshold: `H0` (Strong), `H1` (Moderate),
 `H2` (Moderate, primary compartment-attribution component only — its secondary component is
 Exploratory and is excluded), `H4` (Moderate, TF-activity component only — its secondary and

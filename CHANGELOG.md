@@ -1,5 +1,70 @@
 # Changelog
 
+## 2026-08-02 — Category B: claims-versus-evidence wording alignment pass
+
+**Not a new analysis, no evidence grade changed, no result reinterpreted** — this is a single,
+coherent documentation update realigning the project's title, central question, and narrative
+with what A1 and A2 (above) established with evidence. Every change below is traceable to A1,
+A2, or an already-documented limitation; no analysis was rerun (figures were deliberately left
+unregenerated — their titles reflect the modules' original working labels, same treatment as
+each module's own unchanged `## Hypothesis` section, see below).
+
+**Title and central question** (root `README.md`): retitled from "Tumour-derived neutrophil
+recruitment and signalling programmes in melanoma immune checkpoint response" to "Immune-
+compartment secretory and regulatory programmes associated with immune checkpoint response in
+melanoma." Central question reworded correspondingly. Justification (both grounded in A1/H0,
+not precaution) stated inline: (1) the canonical neutrophil-chemoattractant repertoire is
+undetectable in this dataset (A1), so H1's actual finding cannot be called "neutrophil
+recruitment"; (2) malignant cells are ~0.04% of GSE120575 (H0), so no finding here is
+demonstrated to be tumour/malignant-cell-derived — everything is immune-compartment-derived.
+The original title is preserved here and in git history, not erased. A "Framing note" added to
+the Hypothesis map states explicitly that each module's own pre-registered `## Hypothesis`
+text is left as a historical record, unrewritten — the correction lives in each module's
+Interpretation/Limitations (A1/A2) and in this revised framing, not by silently editing what
+was originally tested.
+
+**`09_synthesis/README.md`** (the principal narrative document): added a top-of-module revision
+note; §2.1 cross-referenced to A1; §2.2 retitled and expanded to state the immune-compartment/
+not-neutrophil-specific/not-tumour-derived scope explicitly and to incorporate A2's
+confound-adjustment finding; §2.5 rewritten to (a) state the immune-compartment scope
+plainly, (b) state explicitly that H1/H2 primary/H4 primary are one cohort analysed through
+complementary lenses, not three independent confirmations, and (c) present LTB as the one
+comparatively robust hit among H1's four (robust to both H5a's external replication and A2's
+confound-adjustment) without overstating this as external validation — CCL3/CCL4/CXCL13
+stated as fragile to both checks. §4 (the CXCL8/CXCR1/2 post-hoc question) updated to cite
+A1's more direct confirmation that CXCL8 is absent from the raw matrix entirely, not merely
+filtered out. §5 (limitations rollup) gained explicit entries for: programme scope, cohort/
+confound non-independence, temporal external validity (2014–2017 cohorts vs. current ICB
+practice), untested alternative explanations (tumour burden, clinical covariates), and H2's
+inherited (not re-verified) cell-type calls. §6 restated the revision plainly.
+
+**Other modules touched (light, targeted, matching their own established Limitations-section
+conventions):**
+- `01_background/README.md`: §4 gained an addendum stating the recruitment-programme
+  expectation was only partly borne out (immune-compartment signal detected; neutrophil-
+  specific chemoattractant repertoire undetectable); §5's quoted central question updated to
+  match root `README.md`, with the original wording preserved inline as a dated note.
+- `07_validation_concordance/README.md`: added a Limitations bullet distinguishing "reversed
+  direction, underpowered" from "confidently contradicted" for GSE91061's wide-CI estimates —
+  the pre-registered rubric and its verdicts are unchanged, only the surrounding description is
+  tightened.
+- `04_cellular_sources/README.md`: added a Limitations bullet noting compartment attribution
+  relies on the original study's cell-type calls, not independently re-verified.
+- `08_experimental_translation/README.md`: added a wording note clarifying "recruitment-
+  programme" there is the module's original working label, not a neutrophil-specificity claim;
+  the validation proposals themselves are unaffected.
+- `results/evidence_ledger.tsv`: H1's `biological_hypothesis` field reworded to remove
+  "tumour-derived" and state the immune-compartment/not-neutrophil-specific scope explicitly,
+  citing addendum #1. No other ledger field (direction, grade, justification) changed.
+
+**Final consistency check performed before this commit** (per explicit project-owner
+instruction): searched the full repository for "tumour-derived" and "neutrophil recruitment"
+outside of already-corrected or clearly historical contexts; found and fixed one remaining
+inconsistency (`01_background/README.md`'s own quoted central question, §5, had not been
+updated to match root `README.md`). `CONTINUATION_BRIEF.md` was deliberately left unedited, as
+a dated historical handoff snapshot, consistent with this project's standing rule that
+corrections are new entries, never silent retroactive edits to a historical record.
+
 ## 2026-08-02 — Post-hoc robustness check: therapy-type confound adjustment on H1 (A2)
 
 **Not a new hypothesis test, no new evidence-ledger row** — same peer-review response as A1

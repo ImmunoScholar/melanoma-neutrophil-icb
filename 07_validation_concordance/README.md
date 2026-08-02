@@ -246,6 +246,13 @@ in full, not downplayed.
 
 - **3 of 4 pre-specified genes did not replicate** — CCL3, CCL4, CXCL13 all reverse direction
   in GSE91061 specifically. This is reported as a genuine result, not explained away.
+- **"Reverses direction" should be read alongside the width of these estimates' confidence
+  intervals (Figure 5A), not as a confidently-established opposite effect.** GSE91061's small
+  Responder group (n=10) produces wide CIs that frequently cross zero — e.g. CXCL13's
+  GSE91061 estimate spans roughly −4.3 to −0.7 log2FC. The pre-registered direction+
+  significance rubric is applied correctly and its verdicts stand, but for CCL3 and CCL4
+  specifically (CXCL13 reaches nominal significance, so is less ambiguous) the honest
+  description is closer to "failed to confirm, underpowered" than "confidently contradicted."
 - **LTB's replication is Exploratory, not Moderate or Strong** — direction-consistent but
   non-significant in both cohorts; this does not upgrade H1's own grade for LTB, which
   remains Moderate in `03_recruitment/README.md`, unchanged.

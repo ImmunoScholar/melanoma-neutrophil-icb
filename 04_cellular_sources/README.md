@@ -116,6 +116,11 @@ reported as informative, not omitted.
   CCL3 (Myeloid) and CCL4 (NK) are not -- H2's compartment attribution for CCL3/CCL4 is
   therefore built on the less robust half of H1's discovery, stated here rather than assumed
   unaffected.
+- **Compartment attribution relies on the original study's (Sade-Feldman et al.) own
+  cell-type calls, not independently re-verified in this project.** This is standard practice
+  for reusing public single-cell metadata, but it is an inherited assumption, not a tested
+  one -- an error in the original T/B/Myeloid/NK annotation would propagate directly into
+  this module's dominant-compartment calls.
 - **The near-universal significance of the primary test (34/35 genes) is expected, not
   surprising, given that four genuinely distinct immune lineages were compared** -- this
   finding's value is in which compartment dominates for each gene, not in the fact of
