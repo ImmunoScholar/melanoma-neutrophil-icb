@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-08-02 — Root README rewritten as a presentation pass
+
+Presentation-only revision, no scientific content changed. The root README was restructured
+from a chronological, module-by-module status narrative into a results-first summary: a short
+overview, the evidence-synthesis figure, a single results table (hypothesis, test, result,
+grade) linking to each module, a dataset table, one consolidated limitations paragraph, and a
+pointer to `REPRODUCIBILITY.md`/`CHANGELOG.md` for full methodological and provenance detail.
+No evidence grade, statistical result, or figure was altered; all removed detail remains in
+the relevant module's own README. Reduced from ~2,230 to ~780 words.
+
 ## 2026-08-02 — Final whole-repository consistency audit and project freeze
 
 Per `CONTINUATION_BRIEF.md` §8 Step 3, performed after Category B (above): re-read every
