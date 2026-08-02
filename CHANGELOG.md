@@ -5,6 +5,57 @@ point, this file records every deviation from the frozen specification, with the
 biological blocker that forced it and the justification for the alternative chosen. Additions
 made merely because they were interesting are not permitted (see `README.md`, scope freeze).
 
+## 2026-08-02 — Module 09 (`09_synthesis`) design confirmation and completion
+
+**Not a deviation** — this documents the design-confirmation step for the project's final
+module, matching the design-then-confirm pattern already used for H4's communication
+component and H5's pre-registration.
+
+**Design proposed, then refined by the project owner before implementation (binding
+refinements, all incorporated):**
+1. The synthesis narrative presents an evidence-weighted integration of H0-H5 first; the
+   lack of external replication (H5a/H5b) is allowed to emerge from the grading in Section 2,
+   not asserted as the module's headline framing.
+2. Confirmed: no new evidence-ledger row. Module 09 integrates `results/evidence_ledger.tsv`,
+   it does not extend it — matching Module 08's own precedent.
+3. The CXCL8/CXCR1/CXCR2 check (README Section 4) is kept strictly retrospective: it reports
+   only that these three molecules do not appear in H1's ranked screen, H4's TF-activity
+   ranking, or H5c's overlap tables, framed explicitly as a post-hoc observation about this
+   project's own analyses — not as evidence for or against the axis's biological role in
+   melanoma or the clinical trials referenced in `01_background`.
+4. Every synthesis statement (README Section 2) is built in the fixed order Observation ->
+   Interpretation -> Biological hypothesis -> Clinical implication, so no claim outruns its
+   supporting ledger grade.
+5. Figure 6 was rebuilt as an evidence-driven systems model (not a conceptual illustration):
+   every node/edge is read or re-derived programmatically from already-committed result
+   tables (`h1_discovery_screen_ranked.csv`, `h2_compartment_specificity.csv`,
+   `h4_tf_module_clustering.rds` re-cut at the same r>0.7 threshold already used in
+   `06_regulation_communication/03c_h4_module_clustering.R`, `h5a_gene_replication_combined.csv`,
+   `h5b_tf_module_replication_combined.csv`, `h5c_literature_concordance.csv`), with
+   `stopifnot()` guards confirming the re-derived module memberships/gene counts match the
+   already-documented figures before the script proceeds. Solid edges/borders = generated
+   within this project; dashed = literature-derived or externally-unvalidated. Each tested
+   node's H5 replication tag is computed from `h5a`/`h5b`'s own `concordant_direction`/
+   `significant` columns, never asserted narratively.
+
+**Implementation note.** Figure 6's first rendered draft had a genuine layout bug: fixed
+per-tier box heights didn't scale with each node's actual (variable) label line count, so text
+overflowed box boundaries and one literature node's computed y-position coincided exactly with
+an unrelated module node's position, producing visible text/box overlap. Caught by visual
+inspection before this node was shown to the project owner (this project's standing "verify
+the rendered image, not just exit code" discipline, see `REPRODUCIBILITY.md`) — fixed by sizing
+each box's height to its own label's line count and substantially widening inter-node spacing;
+a second visual pass then caught one edge (`CCL3 -> Wang 2025 overlap node`) whose curvature
+caused it to clip a neighbouring box's corner, fixed by adjusting that edge's curvature
+direction and magnitude. Three total render/inspect cycles before the figure was accepted.
+
+**Result.** `09_synthesis/README.md` (evidence map, evidence-weighted synthesis, Figure 6
+description, the CXCL8/CXCR1/2 retrospective check, limitations rollup, conclusion) and Figure
+6 are both complete. With this module done, all nine planned modules
+(`01_background` through `09_synthesis`) are finished. No new evidence-ledger row was added,
+per the design confirmation above. Remaining: a final whole-project consistency audit
+(`CONTINUATION_BRIEF.md` SS8, Step 3).
+
 ## 2026-08-01 — Architecture frozen
 
 - Central question finalised with no pathway named (revision 3).

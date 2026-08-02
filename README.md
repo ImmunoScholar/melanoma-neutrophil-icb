@@ -35,7 +35,7 @@ substantive finding in `02_dataset_audit/README.md`, not as a setback.
 | H3 | TANs occupy reference-defined functional states; resistance associates with immunosuppressive rather than antigen-presenting programmes | `05_neutrophil_states` | — | **Omitted** — H0 established <20 recoverable neutrophils; see `CHANGELOG.md` |
 | H4 | The recruitment programme is regulatorily coherent and its intercellular communication converges on T-cell suppression | `06_regulation_communication` | 4 | **Complete — Moderate (TF-activity) / Negative finding (communication)** |
 | H5 | The programme generalises to independent cohorts and agrees quantitatively with published TAN biology | `07_validation_concordance` | 5 | **Complete — Exploratory/Negative findings throughout** |
-| — | Synthesis (not a hypothesis test) | `09_synthesis` | 6 | Not started |
+| — | Synthesis (not a hypothesis test) | `09_synthesis` | 6 | **Complete — integrates the existing ledger, adds no new row** |
 
 Every module follows: **Hypothesis → Analysis → Evidence → Interpretation → Limitations →
 Conclusion**, and every conclusion is graded Strong / Moderate / Exploratory in
@@ -141,6 +141,34 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   proposals, stated and justified in `08_experimental_translation/README.md` rather than
   silently omitted. No new evidence-ledger rows — this module makes no graded claim of its
   own.
+
+- **`09_synthesis`: complete.** Not a hypothesis-testing module (exempt from the six-heading
+  template, per the frozen architecture) and **adds no new evidence-ledger row** — it
+  integrates H0-H5's already-graded findings, it does not extend them. Evidence-weighted
+  synthesis (Section 2 of `09_synthesis/README.md`) is organized in the fixed order
+  Observation -> Interpretation -> Biological hypothesis -> Clinical implication throughout,
+  so no statement outruns its supporting grade: H1 (Moderate) and H2 primary (Moderate)
+  establish a two-axis recruitment/organisation programme (myeloid/NK chemotactic; lymphocyte
+  organisational); H4 primary (Moderate) shows this is accompanied by a regulatorily coherent,
+  honestly-characterized TF layer (Meff=31.3 independent programs, not 56); H5's confirmatory
+  tests (H5a/H5b) found the non-LTB components do not clear this project's own pre-declared
+  external-replication bar (Negative finding, concentrated specifically in GSE91061), which
+  constrains the programme's external generalisability without invalidating the internally
+  consistent, patient-level, multiply-corrected discovery work that produced it. **Figure 6**
+  (evidence-driven systems model, `09_synthesis/01_figure6_synthesis_model.R`) renders this
+  H1-H2-H4 structure directly from already-committed result tables — every node/edge
+  traceable to a graded finding, solid vs. dashed distinguishing project-generated results
+  from literature-derived/externally-unvalidated links, with each tested node's H5
+  replication status computed (not asserted) from `h5a`/`h5b`'s own committed columns.
+  **The pre-registered CXCL8/CXCR1/CXCR2 post-hoc check** (Section 4 of the module README):
+  none of the three appears in H1's ranked screen, H4's TF-activity ranking, or H5c's overlap
+  tables — reported strictly as a retrospective observation about what this project's own
+  analyses surfaced, explicitly not as evidence for or against the axis's biological role or
+  the ongoing clinical trials referenced in `01_background`. Full synthesis, limitations
+  rollup, and the CXCL8 check's exact scope caveats in `09_synthesis/README.md`.
+
+With Module 09 complete, all nine planned modules are finished; the only remaining step is a
+final whole-project consistency audit (`CONTINUATION_BRIEF.md` SS8, Step 3).
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every
 post-freeze deviation and its justification.
