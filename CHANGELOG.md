@@ -380,3 +380,59 @@ answered for raw expression without a comparably tight scope or trigger conditio
 
 **Status.** Approval is conditional, not a commitment to run — whether this analysis actually
 proceeds is decided after Step 4's primary result is locked, against condition 5 above.
+
+## 2026-08-02 — H4 communication-network component complete: design decisions and a negative finding
+
+**Deviation.** `liana::liana_wrap()`'s default 5-method usage (`natmi`, `connectome`, `logfc`,
+`sca`, `cellphonedb`) was reduced to a 4-method consensus, excluding `cellphonedb`.
+
+**Justification.** Measured, not guessed: `cellphonedb` (permutation-based) took 178 sec for a
+200-cell test, extrapolating to ~87 min for one full-scale (5,892-cell) run — roughly 3 hours
+across both response-split networks — with real memory risk on top (a `natmi`-only run
+already touched 9.6 GB of this machine's 10 GB WSL2 budget under poor object hygiene in the
+feasibility script, `06_h4_lr_feasibility.R`). The three remaining default methods
+(`connectome`, `logfc`, `sca`) were individually timed and confirmed fast (9–16 sec on the
+same 200-cell test, `06b_method_timing.R`) before being included. The full-scale gene-scope
+restriction (LIANA Consensus's own 1,839-gene L-R universe, versus the full 55,737-gene
+matrix) was verified, not assumed, to produce bit-identical `natmi` output (max absolute
+difference = 0) before being relied upon.
+
+**Also caught, not guessed at**: the LIANA Consensus resource's actual gene-symbol columns
+are `source_genesymbol`/`target_genesymbol` (same convention as the CollecTRI raw
+interactions table), not `ligand`/`receptor` as first assumed — the wrong guess failed loudly
+(empty column selection) rather than silently, on the first run, before any downstream
+computation used it.
+
+**Result.** The pre-specified Fisher's exact enrichment test (T-cell-directed edges x
+GO-annotated suppressive receptor, all scored edges, two response-split networks) is **not
+significant in either network** (Responder OR=1.11, P=0.40; Non-responder OR=1.14, P=0.25) —
+a negative finding, reported per the Negative Results Policy, and the formal basis of this
+component's Exploratory grade in `results/evidence_ledger.tsv` (row `H4-communication`).
+
+**Discovery-discipline note.** A checkpoint-pair pattern (CD86→CTLA4, multiple HLA-D*→LAG3,
+LGALS9→HAVCR2, concentrated in the Non-responder network's significant-edge subset) was
+noticed while inspecting the negative test's output. No follow-up statistical test was run on
+this subset — doing so after seeing the pattern would be exactly the kind of result-contingent
+test-shopping this project's discovery discipline exists to prevent (the same reasoning that
+keeps CXCL8/CXCR1/2 out of discovery before `09_synthesis`). It is recorded as a **Descriptive
+observation** / **Hypothesis for later synthesis** only, explicitly separated from the formal
+Negative finding in the module README, evidence ledger, and Figure 4's caption — terminology
+(Finding / Negative finding / Descriptive observation / Hypothesis for later synthesis) fixed
+by explicit project-owner instruction and applied consistently.
+
+**Figure 4 restructured**, not replaced: Panel A (unchanged, TF-activity) plus a new Panel B
+(communication network) — D is the formal statistical result, E is the descriptive
+observation, visually and textually distinguished (E uses a muted background and explicit
+"DESCRIPTIVE OBSERVATION" labelling, not a node-edge network diagram, to avoid overstating an
+untested pattern). Two real rendering bugs caught before sending to the project owner, not
+assumed fine because "no error": Panel E's title overflowed past its half-width panel into
+Panel D's space, and the overall caption was clipped at the figure's bottom edge — both fixed
+with explicit `strwrap()`-based text wrapping (ggplot does not auto-wrap `plot.title`/
+`plot.caption`/`plot.subtitle`), matching the exact failure mode already documented for
+Figure 1.
+
+**Files.** `06_regulation_communication/06_h4_lr_feasibility.R`, `06b_method_timing.R`,
+`07_h4_lr_communication.R`, `07b_h4_lr_suppression_enrichment.R`;
+`results/h4_lr_{responder,nonresponder}_aggregated.{csv,rds}`,
+`results/h4_lr_suppression_enrichment.rds`; `06_regulation_communication/README.md` and
+`figures/figure4_h4_tf_activity.{png,svg}` updated.

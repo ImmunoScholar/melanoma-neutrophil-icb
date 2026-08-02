@@ -142,6 +142,27 @@ on the machine that produced them, never estimated.
   `tpm[!is.na(gene)]` first (guarded by `stopifnot(n_dropped <= 5)` so a much larger future
   problem would not be silently dropped the same way).
 
+- **LIANA's Consensus resource uses `source_genesymbol`/`target_genesymbol` column names**
+  (same convention as the CollecTRI raw interactions table), not `ligand`/`receptor` as might
+  be guessed from `liana_wrap()`'s own OUTPUT column names (`ligand.complex`, `receptor`,
+  etc. — those are liana's post-processed output, not the raw resource's input columns). A
+  wrong guess here fails loudly (empty column selection) rather than silently — confirmed by
+  printing `colnames()`/`head()` before relying on any specific name, the same discipline
+  already used for the OmniPath interactions endpoint.
+- **`liana::liana_wrap()`'s dense dual-assay requirement is affordable at full scale only
+  after restricting genes to the L-R resource's own universe.** The full 55,737-gene matrix
+  OOM-killed at full cell scale (see the H4 sanity-check gotcha above); restricting to
+  LIANA Consensus's 1,839-gene universe (of 1,893 total) cuts assay memory from an estimated
+  ~5.25 GB to ~173 MB and was verified, not assumed, to produce bit-identical `natmi` output
+  (max absolute difference = 0) versus the full-gene matrix on the same cells. This is a
+  scope reduction to what LIANA actually needs (it does not use genome-wide background for
+  its per-pair scores), not a shortcut.
+- **`cellphonedb` (LIANA's permutation-based method) is far more expensive than the other
+  four default methods.** Measured: 178 sec for 200 cells (natmi/connectome/logfc/sca: 9-30
+  sec for the same or a larger cell count), extrapolating to ~87 min for one full-scale
+  (5,892-cell) run. Excluded from this project's L-R consensus on these measured grounds
+  (`06_regulation_communication/06_h4_lr_feasibility.R`, `06b_method_timing.R`), not a guess.
+
 ## Random seeds
 
 | Seed | Location | Purpose |

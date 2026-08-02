@@ -33,7 +33,7 @@ substantive finding in `02_dataset_audit/README.md`, not as a setback.
 | H1 | ICB-resistant melanomas exhibit enhanced neutrophil-recruitment signalling programmes | `03_recruitment` | 2 | **Complete — Moderate** |
 | H2 | Neutrophil-recruiting signalling is compartment-restricted rather than uniformly distributed | `04_cellular_sources` | 3 | **Complete — Moderate/Exploratory** |
 | H3 | TANs occupy reference-defined functional states; resistance associates with immunosuppressive rather than antigen-presenting programmes | `05_neutrophil_states` | — | **Omitted** — H0 established <20 recoverable neutrophils; see `CHANGELOG.md` |
-| H4 | The recruitment programme is regulatorily coherent and its intercellular communication converges on T-cell suppression | `06_regulation_communication` | 4 | **In progress — TF-activity component complete, Moderate** |
+| H4 | The recruitment programme is regulatorily coherent and its intercellular communication converges on T-cell suppression | `06_regulation_communication` | 4 | **Complete — Moderate (TF-activity) / Negative finding (communication)** |
 | H5 | The programme generalises to independent cohorts and agrees quantitatively with published TAN biology | `07_validation_concordance` | 5 | Not started |
 | — | Synthesis (not a hypothesis test) | `09_synthesis` | 6 | Not started |
 
@@ -67,28 +67,36 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   at adequate power (3 usable responder patients), so CCL3/TYMP's myeloid origin for their H1
   response-association remains unconfirmed. Full results and limitations in
   `04_cellular_sources/README.md`.
-- **H4 (`06_regulation_communication`): in progress.** TF-activity component complete,
-  Moderate grade. Patient-level pseudobulk (same 19 pre-treatment patients as H1/H2),
-  `decoupleR::run_ulm()` against a verified CollecTRI network (42,698 edges, 1,178 TFs), 754
-  TFs scored. 56 significant at FDR<0.05 — but reported alongside a module-clustering
-  characterization (hierarchical clustering + Nyholt 2004 effective-test count) showing this
-  collapses to ~31 effective independent regulatory programmes, not 56 independent findings.
-  Two large modules elevated in non-responders (a canonical E2F proliferation cluster; a
-  broader metabolic/nuclear-receptor cluster) are opposed by a smaller module elevated in
-  responders (IKZF3/BACH2/SATB2 — established lymphocyte-differentiation regulators, stated
-  as plausibility, not validation). Same therapy-type confound H1 documented (same cohort)
-  applies here too, restated rather than assumed already covered. Full results and
-  limitations in `06_regulation_communication/README.md`.
-  **Secondary/exploratory follow-up complete** (pre-registered, `CHANGELOG.md`): restricted
-  to the primary's 56 locked TFs, compartment-level (T_cell/NK/B_cell). T_cell's result
-  (43/56 hits) is not treated as independent evidence — it correlates strongly with the
-  primary whole-sample signal (r=0.887) and shares its patient count, both explained by T
-  cells being 69% of whole-sample composition. The informative component is NK (5 TFs) and
-  B_cell (3 TFs), reaching significance despite lower power — B cells specifically carry a
+- **H4 (`06_regulation_communication`): complete.** TF-activity component: Moderate grade.
+  Patient-level pseudobulk (same 19 pre-treatment patients as H1/H2), `decoupleR::run_ulm()`
+  against a verified CollecTRI network (42,698 edges, 1,178 TFs), 754 TFs scored. 56
+  significant at FDR<0.05 — but reported alongside a module-clustering characterization
+  (hierarchical clustering + Nyholt 2004 effective-test count) showing this collapses to ~31
+  effective independent regulatory programmes, not 56 independent findings. Two large modules
+  elevated in non-responders (a canonical E2F proliferation cluster; a broader
+  metabolic/nuclear-receptor cluster) are opposed by a smaller module elevated in responders
+  (IKZF3/BACH2/SATB2 — established lymphocyte-differentiation regulators, stated as
+  plausibility, not validation). Same therapy-type confound H1 documented (same cohort)
+  applies here too, restated rather than assumed already covered.
+  **Secondary/exploratory follow-up** (pre-registered, `CHANGELOG.md`): restricted to the
+  primary's 56 locked TFs, compartment-level (T_cell/NK/B_cell). T_cell's result (43/56 hits)
+  is not treated as independent evidence — it correlates strongly with the primary
+  whole-sample signal (r=0.887) and shares its patient count, both explained by T cells being
+  69% of whole-sample composition. The informative component is NK (5 TFs) and B_cell (3
+  TFs), reaching significance despite lower power — B cells specifically carry a
   responder-elevated lymphocyte-differentiation signal (IKZF3), echoing H2's own B-cell/LTB
-  finding. Graded Exploratory, separate ledger row, not promoted into Figure 4 or any
-  main-narrative figure. **Not yet run**: H4's ligand-receptor communication-network
-  component (testing convergence on T-cell suppression).
+  finding. Graded Exploratory, separate ledger row, not promoted into Figure 4.
+  **Communication network component: Negative finding.** Pre-specified Fisher's exact test
+  (T-cell-directed edges x GO-annotated suppressive receptor, LIANA 4-method consensus,
+  response-split networks) does not support enrichment in either network (Responder OR=1.11
+  P=0.40; Non-responder OR=1.14 P=0.25) — reported plainly per the Negative Results Policy. A
+  checkpoint-pair pattern noticed afterward in the significant-edge subset (CD86→CTLA4,
+  HLA-D*→LAG3, LGALS9→HAVCR2, concentrated in the Non-responder network) was **not**
+  independently tested and is carried forward only as a Descriptive observation / Hypothesis
+  for later synthesis — explicitly not evidence, does not change this component's grade.
+  Figure 4 now integrates both components (Panel A: TF-activity; Panel B: communication,
+  with the statistical result and the descriptive observation visually and textually
+  distinguished). Full results and limitations in `06_regulation_communication/README.md`.
 - **H5: not started.**
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every

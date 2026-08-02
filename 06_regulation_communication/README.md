@@ -1,9 +1,12 @@
 # Regulatory Coherence of the Recruitment Programme (H4)
 
-**Status: primary and secondary TF-activity analyses complete. This README covers H4's
-TF-activity component in full (primary + pre-registered secondary).** The ligand-receptor
-communication analysis (H4's second, separate component, testing convergence on T-cell
-suppression) has not yet been run — see `CONTINUATION_BRIEF.md` §8.
+**Status: H4 complete — both components run (TF-activity: primary + secondary; communication
+network: primary).** This README uses four consistent terms throughout, matching the project
+owner's explicit instruction: **Finding** (supported by a pre-specified statistical analysis),
+**Negative finding** (a pre-specified analysis did not support the tested effect), **Descriptive
+observation** (an unbiased pattern noticed after analysis, not itself statistically tested
+within H4), and **Hypothesis for later synthesis** (may be revisited in H5/`09_synthesis`, not
+claimed as evidence here).
 
 ## Hypothesis
 
@@ -56,6 +59,42 @@ threshold as H2), `decoupleR::run_ulm()` run per compartment, then subset to the
 TFs before any testing. `limma`, same direction convention, Benjamini-Hochberg FDR pooled
 globally across all 168 tests (3 compartments x 56 TFs), matching H2's secondary-test
 convention exactly.
+
+**Communication network (H4's second, co-primary component).** Tests whether intercellular
+ligand-receptor structure converges on T-cell-directed edges, and whether this differs by
+response. Design confirmed against real, measured feasibility data before writing the real
+analysis (`06_h4_lr_feasibility.R`, `06b_method_timing.R`), not assumed:
+
+- **Gene scope**: restricted to LIANA Consensus's own L-R gene universe (1,839 of 1,893 genes
+  present in our matrix) — proven bit-identical to the full 55,737-gene matrix for `natmi`'s
+  output (max absolute difference = 0), so this is a scope reduction to what LIANA actually
+  needs, not a shortcut. Cuts assay memory from ~5.25 GB to ~173 MB.
+- **Method**: 4-method consensus (`natmi`, `connectome`, `logfc`, `sca`) aggregated via
+  `liana_aggregate()` — LIANA's own standard multi-method usage. `cellphonedb` excluded, with
+  measured justification: ~87 min extrapolated full-scale runtime (178 sec for a 200-cell
+  test) and real memory risk (`natmi` alone touched 9.6 GB of this machine's 10 GB budget
+  under poor object hygiene in the feasibility script).
+- **Response split**: two separate networks (Responder-only cells, Non-responder-only cells),
+  pooled across patients within each group — a general property of how LIANA operates on
+  pooled cells, not a project-specific shortcut. Every compartment x response cell count
+  clears LIANA's `min_cells=5` floor by a wide margin (minimum: Myeloid-Responder, 87 cells).
+- **Compartments**: T_cell, B_cell, Myeloid, NK (same as H2/H4-secondary; Mast/Malignant/
+  Unassigned excluded for unusable counts).
+- **Suppression-receptor panel**: externally sourced via `msigdbr` (GO:BP terms matching
+  `NEGATIVE_REGULATION_OF.*T_CELL`, 27 terms, printed in full for audit, unioned to 293
+  genes) — same discipline as H1's GO-sourced cytokine panel, not a hand-picked checkpoint
+  gene list.
+- **Pre-specified test**: Fisher's exact test per network, all scored edges — `target ==
+  T_cell` (yes/no) x `receptor in suppression panel` (yes/no, any subunit for complexes).
+  This is the ONLY statistical test run on this network; no follow-up test was run after
+  inspecting results (see Evidence).
+- **Unit of analysis, stated plainly**: EDGES within one network, not patients. Each response
+  group produces exactly one pooled network — a Responder-vs-Non-responder *network*
+  comparison is inherently descriptive, unlike H1/H2/H4-TF-activity's patient-level
+  inferential tests. The Fisher's test above is a legitimate significance test, but only of
+  enrichment *within* one network.
+- **Discovery-discipline reminder**: CXCL8/CXCR1/2 receive no special commentary anywhere in
+  this analysis, whether or not they appear in the unbiased edge tables.
 
 ## Evidence
 
@@ -137,6 +176,35 @@ despite substantially lower power and weaker correlation with the primary signal
   IKZF3 is a member of the primary's responder-elevated Module 5 (lymphocyte-differentiation
   cluster).
 
+**Communication network result — NEGATIVE FINDING.** The pre-specified Fisher's exact test
+does not support suppressive-receptor enrichment among T-cell-directed edges, in either
+network:
+
+| Network | Edges | T-cell-directed suppressive / total | Other-target suppressive / total | OR | P |
+|---|---|---|---|---|---|
+| Responder | 2,823 | 98/656 (14.9%) | 296/2,167 (13.7%) | 1.11 | 0.40 |
+| Non-responder | 3,477 | 139/844 (16.5%) | 389/2,633 (14.7%) | 1.14 | 0.25 |
+
+This is reported exactly as it is, per the Negative Results Policy: T-cell-directed
+communication is **not** statistically enriched for GO-annotated suppressive receptors
+relative to communication directed elsewhere, in this data, at this sample size. This
+negative finding is the formal H4 communication result and is the basis of this component's
+conclusion.
+
+**Descriptive observation (NOT independently tested).** While inspecting the subset of
+statistically significant edges (`aggregate_rank<0.05`) from the negative-finding test above,
+a pattern was noticed: the Non-responder network's significant T-cell-directed edges include
+21/76 (27.6%) with a GO-annotated suppressive receptor, versus the Responder network's 6/40
+(15.0%) — and several of the Non-responder-specific ones are established immune checkpoint
+interactions that emerged from the unbiased GO panel, not a hand-picked list: `CD86→CTLA4`,
+multiple `HLA-D*→LAG3` pairs (MHC-II presented to the LAG3 checkpoint receptor), `LGALS9→
+HAVCR2` (Galectin-9/TIM-3). **No additional statistical test was run on this subset** — doing
+so after noticing the pattern would be exactly the kind of result-contingent test-shopping
+this project's discovery discipline exists to prevent (the same reasoning that keeps
+CXCL8/CXCR1/2 out of discovery). This is stated here as a **Descriptive observation** and a
+**Hypothesis for later synthesis** only — see `results/h4_lr_suppression_enrichment.rds` for
+the full edge list, reproduced in Figure 4 Panel E.
+
 ## Interpretation
 
 1. **Statistical change.** 56/754 TFs (7.4%) significant at FDR<0.05, patient-level units,
@@ -187,6 +255,37 @@ above):
    corroborated by H5 or the communication-network component, revisit in `09_synthesis`; not
    acted on prematurely from this result alone.
 
+**Communication network interpretation** (same five steps, applied to the pre-specified test
+only — the checkpoint-pair pattern is a Descriptive observation, addressed separately below,
+not folded into this inferential interpretation):
+
+1. **Statistical change.** Fisher's exact test, all scored edges: OR≈1.1 in both networks,
+   P=0.40 (Responder) and P=0.25 (Non-responder) — neither reaches significance. A Negative
+   finding.
+2. **Biological process.** Communication directed at T cells is not, in this data, more
+   enriched for GO-annotated suppressive receptors than communication directed at other
+   compartments. This does not mean no such signalling exists — it means this specific,
+   unbiased, pre-specified test does not detect a differential enrichment at this sample
+   size.
+3. **Tumour immunology implication.** None claimed from this test — a negative result does
+   not support an implication about T-cell suppression convergence.
+4. **Translational implication.** None — explicitly not drawn from a negative finding.
+5. **Validating experiment.** Not applicable to a negative finding; if the Descriptive
+   observation below is independently corroborated (H5, or a future, adequately-powered
+   dataset), a validating experiment could be proposed at that point, not now.
+
+**Descriptive observation interpretation** (Hypothesis for later synthesis, explicitly not
+evidence):
+
+The checkpoint-pair pattern (CD86→CTLA4, HLA-D*→LAG3, LGALS9→HAVCR2 concentrated in the
+Non-responder network's significant T-cell-directed edges) is biologically plausible — these
+are established, literature-recognized immune checkpoint interactions, and their emergence
+from an unbiased GO-based panel (not hand-picked) is itself methodologically reassuring. But
+it was noticed post hoc, is not statistically tested within H4, and must not be read as
+evidence of differential checkpoint signalling. It is carried forward as a **Hypothesis for
+later synthesis**: worth checking against H5's independent cohorts or revisiting in
+`09_synthesis`, not asserted here.
+
 ## Limitations
 
 Per the Negative Results Policy, the audit findings above are reported in full rather than
@@ -204,9 +303,6 @@ omitted because they complicate a clean narrative.
   to H0 replication only. External validation remains H5's role.
 - **TF activity is inferred, not measured.** `decoupleR::run_ulm()` estimates activity from
   target-gene expression patterns; it is not a direct measurement of TF binding or occupancy.
-- **This module's two components are not both complete.** The ligand-receptor communication
-  analysis (testing convergence on T-cell suppression, the second half of H4's hypothesis) has
-  not yet been run — this README and evidence-ledger entry cover the TF-activity result only.
 
 **Secondary test limitations**, per the Negative Results Policy stated in full rather than
 downplayed:
@@ -226,6 +322,25 @@ downplayed:
   other main-narrative figure — see `figures/figure4_h4_tf_activity` caption for the
   cross-reference.
 
+**Communication network limitations**, stated in full rather than downplayed:
+
+- **Network-level comparison is inherently descriptive, not inferential.** Each response
+  group produces exactly one pooled network — there is no per-patient replicate at the
+  network level, unlike every other statistical test in this project. The Fisher's test is a
+  legitimate test of enrichment *within* one network; comparing the two networks' results to
+  each other is not a patient-level hypothesis test.
+- **Patient pooling within each network** is a general property of how LIANA (and most L-R
+  tools) operate on pooled single cells, not a project-specific compromise — but it means a
+  disproportionately cell-rich patient could shape a network's edges more than a
+  cell-sparse one, unaddressed by the current design.
+- **`cellphonedb` excluded from the consensus**, on measured runtime/memory grounds (see
+  Analysis) — the reported result is a 4-method, not 5-method, LIANA consensus.
+- **Same therapy-type confound and same cohort** as every other H4/H1/H2 analysis, not
+  adjustable at this size.
+- **The Descriptive observation is exactly that** — not independently tested, not part of
+  this component's evidence grade, and must not be conflated with the pre-specified Negative
+  finding above when this module is summarized elsewhere (root `README.md`, evidence ledger).
+
 ## Conclusion
 
 **Primary result: evidence grade Moderate.** Patient-level statistics and multiple-testing
@@ -236,8 +351,7 @@ plausibility, not validation. Capped at Moderate rather than Strong for the same
 H1/H2: no cross-dataset replication of its own, and TF activity here is inferred rather than
 directly measured. The recruitment programme is regulatorily coherent in the sense tested
 here — a small number of correlated, plausible regulatory programs, not undirected noise —
-but this is one component of H4, not the whole hypothesis; the communication-network
-component remains to be run.
+but this is one component of H4, not the whole hypothesis.
 
 **Secondary compartment-level result: evidence grade Exploratory** — graded separately, not
 combined with the primary, matching H2's precedent for genuinely different confidence
@@ -248,3 +362,25 @@ the responder-elevated lymphocyte-differentiation signal (IKZF3/IKZF2/ZFX), echo
 B-cell/LTB finding — and are reported as supporting evidence, not promoted further, per the
 pre-registered conditions. May be revisited in `H5` or `09_synthesis` if independently
 corroborated; not acted on further from this result alone.
+
+**Communication network result: Negative finding (pre-specified test); Descriptive
+observation (checkpoint-pair pattern) carried forward as a Hypothesis for later synthesis
+only.** The pre-specified Fisher's exact enrichment test does not support T-cell-directed
+communication being enriched for GO-annotated suppressive receptors, in either network
+(Responder OR=1.11 P=0.40; Non-responder OR=1.14 P=0.25) — reported plainly as a negative
+result, per the Negative Results Policy, and this is the basis of this component's
+conclusion. A checkpoint-pair pattern noticed in the significant-edge subset afterward
+(CD86→CTLA4, HLA-D*→LAG3, LGALS9→HAVCR2, concentrated in the Non-responder network) is
+biologically plausible but was **not independently tested** and does **not** change this
+grade — stated explicitly as a Descriptive observation / Hypothesis for later synthesis, to
+be revisited only if independently corroborated in H5 or `09_synthesis`.
+
+**Overall H4 status: complete.** H4's hypothesis has two components: TF-activity regulatory
+coherence (Finding, Moderate grade — the recruitment programme is regulatorily coherent) and
+communication-network convergence on T-cell suppression (Negative finding — not supported by
+the pre-specified test, in this data, at this sample size). Both are now tested and
+documented to the same standard as H0–H2, with a pre-registered secondary follow-up
+(Exploratory) and an explicitly-labeled, untested descriptive observation carried forward
+for later synthesis. H4 does not conclude with a single uniform verdict — it concludes with
+one supported Finding and one Negative finding, reported with equal honesty, per this
+project's Negative Results Policy.
