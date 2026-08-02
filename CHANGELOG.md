@@ -332,3 +332,51 @@ to the script itself.
 
 **Files.** `06_regulation_communication/02_h4_sanity_check.R`. No results/figures — this is a
 compatibility check only, no scientific claim is made here.
+
+## 2026-08-02 — Pre-registration: H4 secondary compartment-level TF-activity analysis
+
+**This entry is written before any H4 result exists** (Step 4's primary analysis has not yet
+been run), specifically to make that timing auditable — the same discipline this project
+already applies to CXCL8/CXCR1/2 (see `01_background`/`README.md`) and to H1's/H2's externally-
+sourced discovery panels: a scope decision that could shape or be shaped by results is
+recorded before the results exist, not after.
+
+**Decision.** A compartment-level follow-up to H4's primary (patient-level) TF-activity
+analysis is approved **in principle**, but only as a pre-specified **secondary/exploratory**
+analysis, under all of the following binding conditions:
+
+1. The patient-level TF-activity analysis (Step 4) must be complete and its ranked results
+   committed to git **before** any compartment-level script is written or run.
+2. Only TFs meeting Step 4's pre-defined significance threshold (FDR < 0.05, with FDR < 0.10
+   TFs reported as a secondary tier — exactly matching H1's own convention) are eligible for
+   compartment-level testing. **No additional discovery search is permitted** — the
+   compartment-level analysis may not introduce, substitute, or expand the TF panel beyond
+   Step 4's own locked hit list.
+3. The compartment-level analysis is labelled **Exploratory/Secondary** everywhere it appears
+   — evidence ledger, module README, figure, and interpretation — with its own ledger row(s),
+   never merged into or averaged with the primary result's grade.
+4. Its purpose is narrowly scoped: does the primary signal trace to a specific cellular
+   compartment, and does it reinforce or contradict H2's already-established "regulation ≠
+   abundance" pattern (LTB: B-cell-dominant expression, T-cell-significant response signal).
+   It must not alter the central question, H4's primary conclusion, or any other module's
+   conclusions.
+5. If the primary Step 4 analysis yields very few or zero TFs at FDR < 0.05, **this secondary
+   analysis is skipped entirely** — thresholds are not relaxed to manufacture eligible TFs.
+6. If run, weak, inconsistent, or underpowered secondary results are reported honestly (per
+   the Negative Results Policy) and remain supplementary — later modules (H5, `08`, `09`) are
+   never redesigned around a secondary/exploratory finding.
+
+**Justification.** Evaluated against a stricter benefit/cost framework at the project owner's
+request (does it strengthen the central question rather than pad the repository; does it
+increase novelty/translational value; would a PhD-selection reviewer reasonably expect it
+after H2; does expected gain justify the added multiple-testing/interpretation burden; can it
+be scoped as a small supplementary check rather than a new module). Conclusion: justified only
+as a small, tightly-bounded, pattern-consistent follow-up mirroring H2's own primary/secondary
+structure (H2 restricted its secondary test to H1's FDR<0.10 hit genes; this restricts its
+secondary test to H4's own FDR<0.05 hit TFs, same logic, same discipline) — not as a
+freestanding module. Rejected in its original, broader form (a full compartment x all-scored-
+TFs sweep run alongside the primary analysis), which would have reopened a question H2 already
+answered for raw expression without a comparably tight scope or trigger condition.
+
+**Status.** Approval is conditional, not a commitment to run — whether this analysis actually
+proceeds is decided after Step 4's primary result is locked, against condition 5 above.
