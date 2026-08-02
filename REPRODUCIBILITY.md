@@ -162,6 +162,18 @@ on the machine that produced them, never estimated.
   sec for the same or a larger cell count), extrapolating to ~87 min for one full-scale
   (5,892-cell) run. Excluded from this project's L-R consensus on these measured grounds
   (`06_regulation_communication/06_h4_lr_feasibility.R`, `06b_method_timing.R`), not a guess.
+- **H5's two bulk validation cohorts needed two new packages not used elsewhere in this
+  project**: `readxl` (GSE78220's supplementary file is `.xlsx`) and `org.Hs.eg.db` (GSE91061's
+  gene IDs are Entrez, not symbols — confirmed already installed when checked, no install
+  needed, but flagged here since a fresh clone may need `renv::install("bioc::org.Hs.eg.db")`).
+- **Neither H5 validation cohort's phenotype-table join key could be assumed.** GSE78220's
+  `title` field (`Pt16`) does not match its FPKM matrix's column names (`Pt16.baseline`) —
+  verified via direct comparison, constructed via patient-ID substring match. GSE91061's
+  `title` field matches its expression columns exactly (109/109) — also verified, not assumed,
+  precisely because GSE78220's did not.
+- **GSE78220's series title ("pre-treatment melanomas") does not mean every sample is
+  pre-treatment** — one of 28 samples (Pt16) is on-treatment, confirmed via each sample's own
+  `biopsy time:ch1` field, not the series-level description.
 
 ## Random seeds
 
@@ -175,8 +187,8 @@ on the machine that produced them, never estimated.
 |---|---|---|---|---|
 | GSE120575 | Sade-Feldman et al. | Primary discovery (scRNA-seq, ICB responder/non-responder, paired pre/post) | 2026-08-01 | Downloaded and checksummed — see `data/raw/GSE120575/download_manifest.csv` (TPM matrix, 126,721,504 bytes, MD5 `8bb26ab1e694c1396de3751695fa90e8`; patient/cell metadata, 83,035 bytes, MD5 `1b2788e594d9ee3ebf24b419a7fec295`). Loaded and verified: 55,738 genes x 16,291 cells; metadata 16,291 rows; join key (TPM column names vs metadata `title` field) matches exactly, 0 mismatches either direction. |
 | GSE72056 | Tirosh et al. | H0 replication check only — independent CD45+-sorted, Smart-seq2 melanoma cohort | 2026-08-01 | Downloaded and checksummed — see `data/raw/GSE72056/download_manifest.csv` (75,031,245 bytes, MD5 `9c05cb22103d01d3086a2a952e97e96b`). Loaded and verified: 23,686 genes x 4,645 cells (metadata rows `tumor`/`malignant`/`non-malignant cell type` separated from gene rows by pattern match, not fixed line indices). H0 replicated — see `02_dataset_audit/README.md`. |
-| GSE78220 | Hugo et al. | Bulk validation (anti-PD-1, pre-treatment) | 2026-08-01 | Not yet downloaded |
-| GSE91061 | Riaz et al. | Bulk validation (anti-CTLA4/anti-PD-1, paired) | 2026-08-01 | Not yet downloaded |
+| GSE78220 | Hugo et al. | Bulk validation for H5, FPKM | 2026-08-02 | Downloaded and checksummed — see `data/raw/h5_download_manifest.csv` (`GSE78220_PatientFPKM.xlsx`, 7,145,318 bytes, MD5 `548c3d627df111c107d83b3f7d33acf0`). Loaded and verified: 25,268 genes x 28 samples; NOT entirely pre-treatment despite the series title (1 on-treatment sample, Pt16, excluded) — 27 pre-treatment (15 Responder/12 Non-responder after CR+PR vs PD binarization). Join key (phenotype `title` vs FPKM column names) does NOT match directly (`Pt16` vs `Pt16.baseline`) — verified, constructed via patient-ID substring match, not assumed. Gene IDs already HGNC symbols. |
+| GSE91061 | Riaz et al. | Bulk validation for H5, raw counts + FPKM | 2026-08-02 | Downloaded and checksummed — see `data/raw/h5_download_manifest.csv` (fpkm/raw/rld matrices + cytolytic score, 4 files). Loaded and verified: 22,187 genes x 109 samples (65 patients, 58 on-/51 pre-treatment). Join key (phenotype `title` vs expression column names) matches exactly, 109/109. Gene IDs are Entrez, not symbols — mapped via `org.Hs.eg.db` (spot-checked correct: 1→A1BG, 10→NAT2, 100→ADA). Pre-treatment usable: 49 (10 Responder/39 Non-responder per PRCR vs PD+SD binarization), 2 UNK excluded. True raw integer counts confirmed present (not just FPKM) — changes H5's statistical method for this cohort specifically, see `CHANGELOG.md`. |
 
 **Scope decision, 2026-08-01:** GSE115978 dropped from the dataset table. It appeared in an
 earlier design pass but was never assigned a role in the locked Analysis order or any

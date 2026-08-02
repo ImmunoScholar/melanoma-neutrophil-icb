@@ -436,3 +436,122 @@ Figure 1.
 `results/h4_lr_{responder,nonresponder}_aggregated.{csv,rds}`,
 `results/h4_lr_suppression_enrichment.rds`; `06_regulation_communication/README.md` and
 `figures/figure4_h4_tf_activity.{png,svg}` updated.
+
+## 2026-08-02 — H4 formally frozen
+
+**Decision.** H4 (`06_regulation_communication`) is closed. No further analysis, figures, or
+evidence-ledger entries will be added to it. Reviewed against the standard "would this
+weaken the manuscript/portfolio if left as-is" test before freezing, not assumed complete by
+default:
+
+- No essential analysis is missing — H0-H4 are each honestly scoped, with limitations already
+  disclosed in their own READMEs rather than deferred silently.
+- Two real, carried-forward methodological considerations for H5 (not H4 defects, but
+  context H5's design must account for): (1) the therapy-type confound documented in H1/H2/H4
+  is specific to GSE120575's therapy mix and will not match either H5 validation cohort's own
+  (different) therapy composition — a genuine interpretive caveat for H5, not something to
+  retrofit into H4; (2) H2's compartment attribution and H4's communication-network component
+  both require single-cell resolution and are therefore **out of scope for H5 entirely** —
+  bulk validation cohorts cannot test them, and H5 will not attempt to.
+
+Any future observation relevant to H4 (from H5 or `09_synthesis`) is recorded in that module,
+cross-referencing H4, not by reopening it.
+
+## 2026-08-02 — H5 pre-registration (CONTINUATION_BRIEF.md §8, Step 9)
+
+**Written after the dataset audit but before any hypothesis test is run**, per the project
+owner's explicit sequencing: (1) dataset audit complete (below), (2) statistical methods
+finalized against the verified data format (below), (3) this entry, (4) implementation next,
+not before.
+
+### Scope (fixed, not to expand)
+
+H5 validates **H1's gene-level findings and H4's two named TF-activity modules only**. It
+does **not** attempt to validate H2 (compartment attribution) or H4's communication
+component — both require single-cell resolution unavailable in bulk cohorts; this is a hard
+scope boundary, not an oversight. No additional exploratory analyses beyond the one
+pre-declared exploratory component (H5c) are permitted unless a genuine methodological
+blocker is encountered — scope is not to expand simply because it is possible.
+
+### Dataset audit (complete, `07_validation_concordance/01_download_data.R`,
+`02_h5_dataset_audit.R`, `03_h5_join_key_and_mapping_check.R`)
+
+**GSE78220** (Hugo et al. 2016, *Cell*) — 28 samples total, FPKM only (no raw counts), gene
+symbols already HGNC-style (no ID mapping needed). One sample (Pt16, on-treatment,
+Progressive Disease) excluded — the series is not entirely pre-treatment despite its title,
+confirmed rather than assumed. Join key: phenotype `title` (e.g. `Pt16`) does not match the
+FPKM matrix's column names (`Pt16.baseline`) directly — verified, constructed via patient-ID
+substring match. Response binarization (matching the original paper's own convention):
+Responder = Complete Response + Partial Response; Non-responder = Progressive Disease.
+**Final N: 27 pre-treatment (15 Responder / 12 Non-responder).**
+
+**GSE91061** (Riaz et al. 2017, *Cell*) — 109 samples (65 patients, pre+on-treatment), true
+raw integer counts available alongside FPKM and rlog matrices (verified: spot-checked
+integer values). Gene IDs are Entrez, not symbols (verified: numeric IDs 1/10/100/1000/10000
+map via `org.Hs.eg.db`, confirmed installed, to A1BG/NAT2/ADA/CDH2/AKT3 — correct, spot
+checked). Join key: phenotype `title` matches expression-matrix column names exactly
+(109/109) — patient ID extracted via regex (substring before first `_`), verified unique (no
+duplicate patients) after restricting to pre-treatment. Response binarization (matching the
+original paper's own convention): Responder = PRCR; Non-responder = PD + SD; Excluded = UNK.
+**Final N: 49 pre-treatment usable (10 Responder / 39 Non-responder), 2 UNK excluded.** The
+small Responder group (n=10) is a real, pre-declared power constraint, stated now before any
+test is run — not discovered after and not a reason to relax thresholds (same handling as
+H2's Myeloid power constraint).
+
+### Statistical methods (finalized against the verified data above, not assumed beforehand)
+
+- **GSE78220**: `limma::lmFit`/`eBayes` on `log2(FPKM+1)` — forced by data type (FPKM only,
+  no raw counts), same justification already used for GSE120575 in H1.
+- **GSE91061**: `edgeR`/`voom` on raw counts — the statistically correct tool given true
+  count data is available here, rather than forcing `limma`-on-FPKM for superficial
+  cross-cohort uniformity. This is the same principle that justified `limma` for GSE120575
+  (the method follows the data's actual type, per cohort), applied honestly in the direction
+  the data now points.
+- **Direction convention**: matches H1 exactly — positive logFC = higher in non-responder.
+
+### Standing rule (binding, added at the project owner's explicit instruction)
+
+**A replication verdict requires BOTH concordant effect direction AND statistical
+significance at the pre-defined threshold below — neither alone establishes replication.**
+Fixed before any result is seen. A significant result in the wrong direction is not a
+replication. A same-direction trend without significance is not a replication (it may be
+reported as an inconclusive/non-replicating trend, not elevated further).
+
+### H5a (confirmatory) — gene-level replication
+
+**Hypothesis.** H1's FDR<0.05 hits (LTB, CCL3, CCL4, CXCL13) show response-associated
+differential expression, same direction as H1, in GSE78220 and GSE91061.
+**Test.** Per-cohort differential expression per gene (method above), patient-level units.
+**Grades** (direction + significance jointly required for any positive tier):
+- **Strong**: concordant direction AND significant (FDR<0.05) in **both** cohorts.
+- **Moderate**: concordant direction in both cohorts AND significant in at least one.
+- **Exploratory**: concordant direction in both cohorts, significant in neither (trend only).
+- **Negative finding**: opposite direction in either cohort, regardless of significance.
+
+### H5b (confirmatory) — TF-module replication
+
+**Hypothesis.** H4's two major named modules (Module 1, metabolic/nuclear-receptor; Module 2,
+E2F proliferation) show consistent response-association direction in both bulk cohorts.
+**Test.** `decoupleR::run_ulm()` on each cohort's own bulk expression (already
+sample-level, no pseudobulk aggregation needed), against the verified CollecTRI network,
+module-level score only (mean/representative activity of each module's member TFs) — **not**
+a 56-TF re-screen, which would be a new discovery search in validation data and is explicitly
+excluded. Same grading tiers as H5a, same direction+significance joint rule.
+
+### H5c (exploratory, capped a priori) — published TAN literature concordance
+
+**Hypothesis.** H1's screened panel/hits show quantifiable overlap with published TAN marker
+sets (Wu 2024, Guo 2025, Wang 2025).
+**Test.** Hypergeometric/Jaccard overlap, externally-sourced marker lists.
+**Grade ceiling: Exploratory, fixed a priori** — a set-overlap comparison is not a
+response-outcome test and can never satisfy the Strong/Moderate tiers' patient-level-
+statistics criterion, the same rubric caveat already applied to H0's existence claim.
+
+### Confirmatory vs. exploratory (explicit, per the project owner's instruction)
+
+H5a and H5b are **confirmatory**: pre-specified genes/modules, pre-specified tests,
+pre-specified grading, no new discovery. H5c is the **only** exploratory component, capped at
+Exploratory regardless of its numeric result, and does not feed back into H5a/H5b's grades.
+No further exploratory analyses are permitted unless a genuine methodological blocker forces
+one — and any such blocker will be logged here, with the blocker and justification, before
+being acted on, matching this project's change-control discipline throughout.
