@@ -110,10 +110,43 @@ on the machine that produced them, never estimated.
   dropped (found once: target `"Mgu"` on the `PPARA` edge, an isolated OmniPath export
   artefact for UniProt `P10746`/`UROS`, confirmed via a direct UniProt lookup, not guess-fixed).
 
+- **`data.table`'s `..` prefix only reliably resolves a bare variable name, not a compound
+  expression.** `tpm[, ..pcells]` (where `pcells` is its own variable) works correctly, but
+  `tpm[, ..cell_meta$cell]` does not select the intended columns — it silently produces a
+  column count/row count mismatch downstream rather than an immediate, obvious error. Always
+  assign the column-name vector to a plain variable first, then use `..` on that variable.
+- **`SingleCellExperiment`/`SummarizedExperiment` requires `colData`'s row names to exactly
+  match the assay matrix's column names.** A `colData` data frame with default integer row
+  names (e.g. straight from `merge()` or row-subsetting) fails construction with "the rownames
+  and colnames of the supplied assay(s) must be NULL or identical..." — fix with
+  `rownames(cell_meta) <- cell_meta$cell` (or equivalent) before constructing the object.
+- **`liana::liana_wrap()`'s `SingleCellExperiment` input requires BOTH `counts` and
+  `logcounts` assays present**, confirmed by reading `liana:::liana_prep.SingleCellExperiment`'s
+  source directly (not documented explicitly in `?liana_wrap`) — omitting either stops
+  immediately. This dataset has no raw counts (TPM-only), so `counts` is populated with raw
+  TPM as the closest available substitute; a real, disclosed limitation, not a true counts
+  assay.
+- **Building both required liana assays (`counts` + `logcounts`) as dense matrices for the
+  full pre-treatment, response-labeled, real-compartment cell set (55,737 genes x 5,892
+  cells), on top of the already-resident full `tpm.rds` object, was OOM-killed** on this
+  machine's 10 GB WSL2 budget. A second, independent hit of the same class of constraint
+  already documented above for GSE120575's `is.na()` sweep. Any future full-dataset liana run
+  needs its own memory strategy (e.g. one compartment/response group processed at a time, or
+  a sparse matrix) — format-verification smoke tests use a small seeded subsample instead
+  (`06_regulation_communication/02_h4_sanity_check.R`, seed `20260802`, <=50 cells/compartment).
+- **A single row of `data/processed/GSE120575/tpm.rds` (of 55,738) has a literal `NA` gene
+  symbol.** Confirmed isolated: 0 duplicated gene symbols elsewhere in the file, exactly 1 NA,
+  0 empty strings. Every H0-H2 script filtered to specific named genes before any bulk numeric
+  operation, so this never surfaced until H4 needed a whole-transcriptome pseudobulk. Any
+  script building a whole-transcriptome structure from this file must filter
+  `tpm[!is.na(gene)]` first (guarded by `stopifnot(n_dropped <= 5)` so a much larger future
+  problem would not be silently dropped the same way).
+
 ## Random seeds
 
-(pending — every stochastic step, e.g. UMAP, permutation tests, will set and record an explicit
-seed at the point it is introduced)
+| Seed | Location | Purpose |
+|---|---|---|
+| 20260802 | 06_regulation_communication/02_h4_sanity_check.R | Per-compartment subsample (<=50 cells/compartment) for the liana SCE-format smoke test only -- not a scientific result, just a compatibility check. Step 5's real analysis, if it needs any subsampling, will set and record its own seed at that point. |
 
 ## Datasets
 

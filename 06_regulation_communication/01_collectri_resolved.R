@@ -21,12 +21,14 @@ download.file(url, dest, method = "libcurl", quiet = FALSE)
 
 raw <- read.delim(dest, stringsAsFactors = FALSE)
 # read.delim's type-guessing does not coerce "True"/"False" strings to logical (only exact
-# "TRUE"/"FALSE" is auto-detected), so these two columns arrive as character -- coerce
-# explicitly before using them as a logical mask.
-raw$consensus_stimulation <- as.logical(raw$consensus_stimulation)
-raw$consensus_inhibition  <- as.logical(raw$consensus_inhibition)
+# "TRUE"/"FALSE" is auto-detected), so these columns arrive as character -- coerce explicitly
+# before using them as a logical mask.
+for (col in c("is_stimulation", "is_inhibition", "consensus_stimulation", "consensus_inhibition")) {
+  raw[[col]] <- as.logical(raw[[col]])
+}
 stopifnot(
-  "consensus_stimulation/consensus_inhibition failed to parse as logical (unexpected values)" =
+  "is_stimulation/is_inhibition/consensus_* failed to parse as logical (unexpected values)" =
+    !anyNA(raw$is_stimulation) && !anyNA(raw$is_inhibition) &&
     !anyNA(raw$consensus_stimulation) && !anyNA(raw$consensus_inhibition)
 )
 cat("Raw rows:", nrow(raw), "| columns:", paste(colnames(raw), collapse = ", "), "\n")
@@ -37,16 +39,59 @@ cat("\nSample genes present (upper-case, matching our matrix's convention):\n")
 present <- sample_genes %in% c(raw$source_genesymbol, raw$target_genesymbol)
 print(setNames(present, sample_genes))
 stopifnot("Expected uppercase human symbols not found -- casing not actually fixed" = all(present))
+
 # --- reformat to decoupleR's expected network shape: source, target, mor ---
-net <- raw[raw$consensus_stimulation | raw$consensus_inhibition, ]
-net$mor <- ifelse(net$consensus_stimulation, 1, -1)
-net <- data.frame(
-  source = net$source_genesymbol,
-  target = net$target_genesymbol,
-  mor    = net$mor
+# Replicates decoupleR::get_collectri(organism="human", split_complexes=FALSE)'s own canonical
+# post-processing exactly (confirmed by reading its source, not guessed), since that is the
+# published, reference way this network is meant to be built -- we are only substituting the
+# raw-data source (OmniPath REST API instead of the broken OmnipathR/Ensembl path), not
+# inventing a different network. Two things this replicates that our first draft skipped, and
+# which explain the "repeated edges" error decoupleR::run_ulm() raised on that draft:
+#  1. Complex sources (raw `source` column contains "COMPLEX", e.g. "COMPLEX:P17275_P17535")
+#     are collapsed to two composite TF labels, "AP1" (JUN/FOS-containing complexes) and
+#     "NFKB" (REL/NFKB-containing complexes) -- not kept as literal complex-partner strings
+#     like "JUNB_JUND". Complexes matching neither pattern have no defined replacement in
+#     decoupleR's own logic and become NA; we drop those explicitly (a disclosed, deliberate
+#     improvement over decoupleR's own code, which does not filter them, since a NA-labelled
+#     "TF" cannot be a meaningful decoupleR::run_ulm() output row).
+#  2. Rows are deduplicated on (source, target) alone, keeping the first occurrence
+#     (`dplyr::distinct(.keep_all = TRUE)`-equivalent), not on the full (source, target, mor)
+#     triple as our first draft did. The two conventions differ exactly when the same
+#     (source, target) pair has conflicting mor across rows -- which happens 126 times in this
+#     data (e.g. JUN->ABCB1 reported as both +1 and -1 by different underlying evidence/
+#     complex-derived rows) and is real: pleiotropic TFs like JUN/NFKB1/RELA are genuinely
+#     reported as both activating and repressing the same target across different curated
+#     source studies. decoupleR's own reference behaviour is to keep whichever row appears
+#     first, not to resolve or average the conflict -- replicated here rather than inventing
+#     an alternative resolution rule.
+is_complex <- grepl("COMPLEX", raw$source, fixed = TRUE)
+interactions <- raw[!is_complex, c("source_genesymbol", "target_genesymbol", "is_stimulation")]
+complexes    <- raw[ is_complex, c("source_genesymbol", "target_genesymbol", "is_stimulation")]
+
+complexes$source_genesymbol <- ifelse(
+  grepl("JUN", complexes$source_genesymbol) | grepl("FOS", complexes$source_genesymbol), "AP1",
+  ifelse(grepl("REL", complexes$source_genesymbol) | grepl("NFKB", complexes$source_genesymbol),
+         "NFKB", NA_character_)
 )
-net <- unique(net)
+n_complex_dropped <- sum(is.na(complexes$source_genesymbol))
+cat("\nComplex rows:", nrow(complexes),
+    "| collapsed to AP1/NFKB:", nrow(complexes) - n_complex_dropped,
+    "| dropped (unmatched complex pattern, no decoupleR-defined replacement):",
+    n_complex_dropped, "\n")
+complexes <- complexes[!is.na(complexes$source_genesymbol), ]
+
+combined <- rbind(interactions, complexes)
+combined <- combined[!duplicated(combined[, c("source_genesymbol", "target_genesymbol")]), ]
+net <- data.frame(
+  source = combined$source_genesymbol,
+  target = combined$target_genesymbol,
+  mor    = ifelse(combined$is_stimulation, 1, -1)
+)
 cat("\nFinal network:", nrow(net), "edges,", length(unique(net$source)), "unique TFs\n")
+stopifnot(
+  "Repeated (source, target) pairs remain after deduplication -- fix did not work" =
+    !anyDuplicated(net[, c("source", "target")])
+)
 
 # Sources (TFs) must be fully uppercase -- decoupleR matches these directly against our
 # expression matrix's row names, and a non-uppercase TF would silently fail to match.
@@ -57,8 +102,8 @@ stopifnot("Non-uppercase TF (source) symbols found -- would silently fail to mat
 # "open reading frame" convention keeps "orf" lowercase (e.g. C9orf72, a real official human
 # symbol, not a casing error), and CollecTRI/OmniPath also includes miRNA targets under
 # miRBase's "hsa-miR-*" convention (a separate naming system from HGNC gene symbols). Neither
-# is mouse data or a bug -- verified by inspecting the actual non-uppercase target values
-# (06_regulation_communication/01b_collectri_casing_diagnostic.R), documented in CHANGELOG.md.
+# is mouse data or a bug -- verified by inspecting the actual non-uppercase target values,
+# documented in CHANGELOG.md.
 #
 # Any non-uppercase target NOT matching one of those two known-legitimate patterns is a data
 # anomaly, not a casing convention -- confirmed for the one case found here ("Mgu", target

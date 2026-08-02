@@ -246,3 +246,89 @@ convenience wrapper does.
 succeeded independently and cleanly on first try — this bug is specific to
 `OmnipathR`'s organism-name resolution and does not touch `liana`'s ligand-receptor resource
 loading.
+
+## 2026-08-02 — Correction to CollecTRI network: replicate decoupleR's own complex/dedup logic
+
+**What was wrong.** The CollecTRI resolution documented immediately above (OmniPath REST API
+fetch) stated a final network of **61,219 edges, 1,192 unique TFs**. That number was produced
+by a first-draft script that deduplicated on the full `(source, target, mor)` triple and kept
+raw complex-partner strings (e.g. `"JUNB_JUND"`) as TF names. It was not yet used in any real
+analysis when the error below was found, so no downstream result is affected.
+
+**How it was found.** Building the H4 data structures (`CONTINUATION_BRIEF.md` §8, Step 3) and
+running `decoupleR::run_ulm()` on real pseudobulk data — the first genuine use of this network
+— failed immediately: `"Network contains repeated edges, please remove them."` Investigated
+rather than patched blindly: 126 `(source, target)` pairs had rows with genuinely conflicting
+`mor` (e.g. `JUN->ABCB1` reported as both `+1` and `-1`), confirmed real (not a parsing
+artefact) by checking every duplicated pair's `mor` values directly. Rather than invent a
+resolution rule, `decoupleR::get_collectri()`'s own source code was read
+(`deparse(decoupleR::get_collectri)`) to find the published, reference way this exact network
+is meant to be built.
+
+**What was actually wrong with the first draft.** Two things it skipped that `get_collectri()`
+does: (1) complex-derived sources (raw `source` column containing `"COMPLEX"`) are collapsed
+to two composite TF labels, `AP1` (JUN/FOS-containing complexes) and `NFKB`
+(REL/NFKB-containing complexes) — not kept as literal partner strings; complexes matching
+neither pattern have no defined replacement in `get_collectri()`'s own logic and are dropped
+here (a disclosed, deliberate difference from `get_collectri()`, which does not filter the
+resulting NA rows — but a NA-labelled "TF" cannot be a meaningful `run_ulm()` output). (2)
+Deduplication is on `(source, target)` alone, keeping the first occurrence
+(`dplyr::distinct(.keep_all = TRUE)`-equivalent), not on the full triple — the two conventions
+differ exactly when `mor` conflicts, which is real, documented TF biology (pleiotropic TFs
+like JUN/NFKB1/RELA are genuinely reported as both activating and repressing the same target
+across different curated source studies), not a data error.
+
+**Fix.** `06_regulation_communication/01_collectri_resolved.R` rewritten to replicate
+`get_collectri(organism = "human", split_complexes = FALSE)`'s canonical post-processing on
+data fetched via the OmniPath REST API workaround, rather than inventing independent logic —
+same underlying data source, same published resolution method, different (working) fetch
+path only.
+
+**Corrected final network:** 42,698 edges, 1,178 unique TFs (22,890 complex rows collapsed
+entirely to `AP1`/`NFKB`, 0 complexes dropped for matching neither pattern — every complex in
+this data contains JUN/FOS or REL/NFKB). One isolated anomalous target symbol (`"Mgu"`,
+confirmed via UniProt to be a mismapped `PPARA` edge, see the entry above) dropped as before.
+`decoupleR::run_ulm()` now runs cleanly with zero repeated-edge errors — verified directly, not
+assumed, via an explicit `stopifnot(!anyDuplicated(net[, c("source","target")]))` guard added
+to the script itself.
+
+## 2026-08-02 — H4 data structures confirmed (Step 3 of CONTINUATION_BRIEF.md §8)
+
+**Not a deviation — a design question resolved by direct testing rather than assumption**, per
+`CONTINUATION_BRIEF.md` §8 Step 3's own instruction.
+
+- **decoupleR TF-activity input.** H1's and H2's already-saved pseudobulk objects are **not**
+  reusable for H4: both are restricted to narrow gene panels (H1: 327 msigdbr
+  cytokine/chemokine/growth-factor genes; H2: H1's 35 tested hits only), and CollecTRI's
+  regulons need broad target-gene coverage to score meaningfully (6,424 of 6,661 unique
+  CollecTRI targets are present in the full transcriptome, vs. a small fraction of that in
+  either narrow panel). A fresh whole-transcriptome patient-level pseudobulk is required
+  instead — built with the same aggregation logic as H1 (mean TPM per patient, pre-treatment/
+  response-labeled cells only) but over all genes. Confirmed working directly:
+  `decoupleR::run_ulm()` ran cleanly on this pseudobulk (19 patients), scoring 754 unique TFs.
+- **A single row of `data/processed/GSE120575/tpm.rds` (of 55,738) has a literal `NA` gene
+  symbol** — confirmed isolated (0 duplicated gene symbols elsewhere, exactly 1 NA, 0 empty
+  strings). Never surfaced in H0-H2 because every prior script filtered to specific named
+  genes before any bulk numeric operation; only building a whole-transcriptome pseudobulk for
+  H4 exposed it. Dropped (documented, isolated single row, matching the same discipline as
+  the CollecTRI "Mgu" anomaly above), not guessed at.
+- **liana L-R input.** Confirmed by reading `liana:::liana_prep.SingleCellExperiment`'s source
+  directly, not assumed from documentation: `liana_wrap()` requires a `SingleCellExperiment`
+  or `Seurat` object (no lighter matrix+labels input exists); `idents_col` takes a `colData`
+  **column name string** directly (simpler than expected); the SCE must carry **both**
+  `counts` and `logcounts` assays or `liana_prep()` stops immediately. This dataset has no raw
+  counts (TPM-only, GEO-deposited — the same reason H1/H2 use `limma`, not `edgeR`/`voom`), so
+  `counts` is populated with raw TPM as the closest available substitute — a real, documented
+  limitation, flagged for review before Step 5's real analysis, not silently worked around. A
+  `SingleCellExperiment` was built from the existing single-cell-resolution `tpm.rds` plus
+  H2's compartment labels (`gse120575_compartment_calls.csv`), restricted to the same
+  compartments H2 used (T_cell/B_cell/Myeloid/NK; Mast/Malignant/Unassigned excluded for
+  unusable cell counts, matching H2's own precedent). Confirmed working directly on a small,
+  seeded subsample (`liana_wrap(method = "natmi")` returned 3,240 real ligand-receptor
+  results) — building the full 5,892-cell SCE with both required assays was OOM-killed on
+  this machine's documented 10 GB WSL2 budget, so the format check uses a subsample; Step 5's
+  real analysis needs its own memory strategy for the full dataset (one compartment/response
+  group at a time, or a sparse matrix), left as a genuine open design question for that step.
+
+**Files.** `06_regulation_communication/02_h4_sanity_check.R`. No results/figures — this is a
+compatibility check only, no scientific claim is made here.
