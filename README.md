@@ -98,21 +98,25 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   Figure 4 now integrates both components (Panel A: TF-activity; Panel B: communication,
   with the statistical result and the descriptive observation visually and textually
   distinguished). Full results and limitations in `06_regulation_communication/README.md`.
-- **H5 (`07_validation_concordance`): in progress.** H5a (confirmatory gene-level
-  replication) complete. Pre-registered in `CHANGELOG.md` before any result existed: H1's 4
-  FDR<0.05 hits tested in two independent bulk cohorts (GSE78220, Hugo et al., n=27
-  pre-treatment; GSE91061, Riaz et al., n=49 pre-treatment usable), statistical method chosen
-  per cohort's verified data type (`limma` on FPKM for GSE78220; `edgeR`/`voom` on raw counts
-  for GSE91061). Replication verdict required BOTH concordant direction AND significance,
-  fixed in advance. Result: **LTB — Exploratory** (direction-consistent in both cohorts,
-  significant in neither). **CCL3, CCL4, CXCL13 — Negative finding** (each reverses direction
-  in GSE91061 specifically). Reported exactly as the pre-registration specifies, per the
-  Negative Results Policy — not reinterpreted, not explained away. Pre-declared caveats
-  (GSE91061's small Responder group, n=10; differing therapy composition across all three
-  cohorts) are stated as context fixed before this analysis was run. H1's own conclusions and
-  grade are unchanged. Full results, Figure 5, and limitations in
-  `07_validation_concordance/README.md`. **Not yet run**: H5b (TF-module replication), H5c
-  (published TAN literature concordance, exploratory and capped a priori).
+- **H5 (`07_validation_concordance`): in progress.** H5a and H5b (both confirmatory)
+  complete. Pre-registered in `CHANGELOG.md` before any result existed: statistical method
+  chosen per cohort's verified data type (`limma` on FPKM for GSE78220, n=27 pre-treatment;
+  `edgeR`/`voom` on raw counts for GSE91061, n=49 pre-treatment usable). Replication verdict
+  required BOTH concordant direction AND significance, fixed in advance.
+  **H5a** (H1's 4 FDR<0.05 genes): **LTB — Exploratory** (direction-consistent in both
+  cohorts, significant in neither). **CCL3, CCL4, CXCL13 — Negative finding** (each reverses
+  direction in GSE91061 specifically).
+  **H5b** (H4's 2 named non-responder-elevated TF-activity modules, module-level score only —
+  not a 56-TF re-screen): **both modules — Negative finding** (both reverse direction in
+  GSE91061, the same cohort where H5a's genes also reversed — noted as a factual
+  cross-reference between two independent confirmatory tests, not tested further).
+  All results reported exactly as the pre-registration specifies, per the Negative Results
+  Policy — not reinterpreted, not explained away. Pre-declared caveats (GSE91061's small
+  Responder group, n=10; differing therapy composition across all three cohorts) are stated
+  as context fixed before these analyses were run. H1's and H4's own conclusions and grades
+  are unchanged. Full results, Figure 5 (Panel A: H5a; Panel B: H5b), and limitations in
+  `07_validation_concordance/README.md`. **Not yet run**: H5c (published TAN literature
+  concordance, exploratory and capped a priori) — the last component of H5.
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every
 post-freeze deviation and its justification.
