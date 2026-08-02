@@ -51,10 +51,10 @@ to replication; CCL3, CCL4, and CXCL13 are not (`03_recruitment`, `07_validation
 
 | Accession | Study | Role |
 |---|---|---|
-| GSE120575 | Sade-Feldman et al. 2018 | Primary discovery, scRNA-seq, 19 pre-treatment patients |
-| GSE72056 | Tirosh et al. 2016 | Independent replication of the neutrophil-recoverability audit |
-| GSE78220 | Hugo et al. 2016 | Independent bulk RNA-seq validation cohort |
-| GSE91061 | Riaz et al. 2017 | Independent bulk RNA-seq validation cohort |
+| GSE120575 | Sade-Feldman et al. 2018 | Primary discovery, scRNA-seq, 19 pre-treatment patients (16,291 cells) |
+| GSE72056 | Tirosh et al. 2016 | Independent replication of the neutrophil-recoverability audit, scRNA-seq, 4,645 cells |
+| GSE78220 | Hugo et al. 2016 | Independent bulk RNA-seq validation cohort, 27 pre-treatment patients |
+| GSE91061 | Riaz et al. 2017 | Independent bulk RNA-seq validation cohort, 49 pre-treatment patients |
 
 ## Limitations
 
@@ -76,7 +76,12 @@ of every hypothesis that follows.
 ## Repository structure
 
 Each module documents a hypothesis, its analysis, evidence, interpretation, and limitations,
-graded Strong / Moderate / Exploratory in `results/evidence_ledger.tsv`. `REPRODUCIBILITY.md`
-documents the computing environment, datasets, and the command sequence to regenerate every
-result and figure from a fresh clone. `CHANGELOG.md` records the reasoning behind every
-deviation from the original analysis design.
+graded Strong / Moderate / Exploratory in `results/evidence_ledger.tsv`. `CHANGELOG.md` records
+the reasoning behind every deviation from the original analysis design.
+
+```bash
+Rscript -e 'renv::restore()'   # restores the pinned R 4.6.1 package library (renv.lock)
+```
+
+`REPRODUCIBILITY.md` gives the full environment, dataset checksums, and the ordered command
+sequence to regenerate every result and figure from a fresh clone.
