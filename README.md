@@ -30,7 +30,7 @@ substantive finding in `02_dataset_audit/README.md`, not as a setback.
 | # | Hypothesis | Module | Figure | Status |
 |---|---|---|---|---|
 | H0 | Neutrophil representation in public melanoma scRNA-seq is determined by protocol and QC, not tumour biology | `02_dataset_audit` | 1 | **Complete — supported, Strong** |
-| H1 | ICB-resistant melanomas exhibit enhanced neutrophil-recruitment signalling programmes | `03_recruitment` | 2 | Not started |
+| H1 | ICB-resistant melanomas exhibit enhanced neutrophil-recruitment signalling programmes | `03_recruitment` | 2 | Discovery screen complete, **Moderate** — Figure 2 pending |
 | H2 | Neutrophil-recruiting signalling is compartment-restricted rather than uniformly distributed | `04_cellular_sources` | 3 | Not started |
 | H3 | TANs occupy reference-defined functional states; resistance associates with immunosuppressive rather than antigen-presenting programmes | `05_neutrophil_states` | — | **Omitted** — H0 established <20 recoverable neutrophils; see `CHANGELOG.md` |
 | H4 | The recruitment programme is regulatorily coherent and its intercellular communication converges on T-cell suppression | `06_regulation_communication` | 4 | Not started |
@@ -50,8 +50,14 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   CD45+ sorting plus Smart-seq2 plate-picking — single-digit recoverable candidates in both
   cohorts. This placed the project on the pre-specified `<20` branch of the failure-tolerant
   decision tree, omitting H3.
-- **H1–H5: not started.** These test the tumour-side recruitment programme and do not require
-  recovered neutrophils.
+- **H1 (`03_recruitment`): discovery screen complete, Moderate grade, Figure 2 pending.**
+  Patient-level pseudobulk (19 pre-treatment patients, GSE120575), unbiased screen of a
+  327-gene GO-sourced chemokine/cytokine/growth-factor panel. 4 genes significant at FDR<0.05,
+  top finding (LTB) concordant with published tertiary lymphoid structure biology. Grade
+  capped at Moderate pending H5's independent-cohort validation, not a gap in H1 itself. Full
+  ranked table and stated limitations (therapy confound, panel attrition) in
+  `03_recruitment/README.md`.
+- **H2–H5: not started.**
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every
 post-freeze deviation and its justification.
