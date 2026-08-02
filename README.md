@@ -34,7 +34,7 @@ substantive finding in `02_dataset_audit/README.md`, not as a setback.
 | H2 | Neutrophil-recruiting signalling is compartment-restricted rather than uniformly distributed | `04_cellular_sources` | 3 | **Complete — Moderate/Exploratory** |
 | H3 | TANs occupy reference-defined functional states; resistance associates with immunosuppressive rather than antigen-presenting programmes | `05_neutrophil_states` | — | **Omitted** — H0 established <20 recoverable neutrophils; see `CHANGELOG.md` |
 | H4 | The recruitment programme is regulatorily coherent and its intercellular communication converges on T-cell suppression | `06_regulation_communication` | 4 | **Complete — Moderate (TF-activity) / Negative finding (communication)** |
-| H5 | The programme generalises to independent cohorts and agrees quantitatively with published TAN biology | `07_validation_concordance` | 5 | **In progress — H5a complete (Exploratory/Negative findings)** |
+| H5 | The programme generalises to independent cohorts and agrees quantitatively with published TAN biology | `07_validation_concordance` | 5 | **Complete — Exploratory/Negative findings throughout** |
 | — | Synthesis (not a hypothesis test) | `09_synthesis` | 6 | Not started |
 
 Every module follows: **Hypothesis → Analysis → Evidence → Interpretation → Limitations →
@@ -98,25 +98,34 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   Figure 4 now integrates both components (Panel A: TF-activity; Panel B: communication,
   with the statistical result and the descriptive observation visually and textually
   distinguished). Full results and limitations in `06_regulation_communication/README.md`.
-- **H5 (`07_validation_concordance`): in progress.** H5a and H5b (both confirmatory)
-  complete. Pre-registered in `CHANGELOG.md` before any result existed: statistical method
-  chosen per cohort's verified data type (`limma` on FPKM for GSE78220, n=27 pre-treatment;
-  `edgeR`/`voom` on raw counts for GSE91061, n=49 pre-treatment usable). Replication verdict
-  required BOTH concordant direction AND significance, fixed in advance.
-  **H5a** (H1's 4 FDR<0.05 genes): **LTB — Exploratory** (direction-consistent in both
-  cohorts, significant in neither). **CCL3, CCL4, CXCL13 — Negative finding** (each reverses
-  direction in GSE91061 specifically).
-  **H5b** (H4's 2 named non-responder-elevated TF-activity modules, module-level score only —
-  not a 56-TF re-screen): **both modules — Negative finding** (both reverse direction in
-  GSE91061, the same cohort where H5a's genes also reversed — noted as a factual
-  cross-reference between two independent confirmatory tests, not tested further).
+- **H5 (`07_validation_concordance`): complete.** H5a, H5b, and H5c all done. Pre-registered
+  in `CHANGELOG.md` before any result existed: statistical method chosen per cohort's
+  verified data type (`limma` on FPKM for GSE78220, n=27 pre-treatment; `edgeR`/`voom` on raw
+  counts for GSE91061, n=49 pre-treatment usable). Replication verdict (H5a/H5b) required
+  BOTH concordant direction AND significance, fixed in advance.
+  **H5a** (H1's 4 FDR<0.05 genes, confirmatory): **LTB — Exploratory** (direction-consistent
+  in both cohorts, significant in neither). **CCL3, CCL4, CXCL13 — Negative finding** (each
+  reverses direction in GSE91061 specifically).
+  **H5b** (H4's 2 named non-responder-elevated TF-activity modules, confirmatory,
+  module-level score only — not a 56-TF re-screen): **both modules — Negative finding** (both
+  reverse direction in GSE91061, the same cohort where H5a's genes also reversed — noted as a
+  factual cross-reference between two independent confirmatory tests, not tested further).
+  **H5c** (published TAN literature concordance, exploratory and capped a priori
+  regardless of result): three real papers behind the pre-registration's citations were
+  identified via literature search — Wu et al. 2024 (*Cell*), Guo et al. 2025, Wang et al.
+  2025 — and their marker sets verified to genuinely different depths, disclosed not hidden
+  (Wang 2025: 13 genes, full text; Guo 2025: 4 genes, abstract only; Wu 2024: zero genes
+  accessible by any method checked, excluded entirely, not approximated). Significant overlap
+  with Wang 2025's set (H1's panel and its hits both include CCL3; the panel also includes
+  VEGFA), zero overlap with Guo 2025's — **graded Exploratory regardless**, per the
+  pre-registration's fixed rubric ceiling.
   All results reported exactly as the pre-registration specifies, per the Negative Results
-  Policy — not reinterpreted, not explained away. Pre-declared caveats (GSE91061's small
-  Responder group, n=10; differing therapy composition across all three cohorts) are stated
-  as context fixed before these analyses were run. H1's and H4's own conclusions and grades
-  are unchanged. Full results, Figure 5 (Panel A: H5a; Panel B: H5b), and limitations in
-  `07_validation_concordance/README.md`. **Not yet run**: H5c (published TAN literature
-  concordance, exploratory and capped a priori) — the last component of H5.
+  Policy — not reinterpreted, not explained away, no marker genes fabricated. Pre-declared
+  caveats (GSE91061's small Responder group, n=10; differing therapy composition across all
+  three cohorts) are stated as context fixed before these analyses were run. H1's and H4's
+  own conclusions and grades are unchanged. Full results, Figure 5 (Panel A: H5a; Panel B:
+  H5b — H5c is not shown in a figure, consistent with its exploratory tier), and limitations
+  in `07_validation_concordance/README.md`.
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every
 post-freeze deviation and its justification.

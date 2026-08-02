@@ -1,19 +1,20 @@
 # Independent-Cohort Validation and Literature Concordance (H5)
 
-**Status: H5a and H5b complete and frozen. H5c (literature concordance) is not yet run** —
-see `CHANGELOG.md`'s pre-registration entry (2026-08-02) for the full design fixed before
-any of H5's results existed.
+**Status: H5 complete in full (H5a, H5b, H5c).** See `CHANGELOG.md`'s pre-registration entry
+(2026-08-02) for the full design fixed before any of H5's results existed.
 
 ## Hypothesis
 
 The recruitment programme identified in H1 generalises to independent cohorts (H5a, H5b)
-and agrees quantitatively with published TAN biology (H5c, not yet run).
+and agrees quantitatively with published TAN biology (H5c).
 **H5a**: H1's FDR<0.05 hits — LTB, CCL3, CCL4, CXCL13 — show response-associated
 differential expression, in the same direction as H1, in two independent bulk RNA-seq
 cohorts (GSE78220, Hugo et al.; GSE91061, Riaz et al.).
 **H5b**: H4's two named, non-responder-elevated TF-activity modules (Module 1,
 metabolic/nuclear-receptor; Module 2, E2F proliferation) show the same direction in both
 cohorts.
+**H5c**: H1's screened panel/hits show quantifiable overlap with published tumour-associated
+neutrophil (TAN) marker sets (Wu et al. 2024, *Cell*; Guo et al. 2025; Wang et al. 2025).
 
 ## Analysis
 
@@ -66,6 +67,35 @@ module score is already a continuous, model-derived quantity once computed, exac
 H4's own primary analysis (which used `limma` uniformly on activity scores regardless of the
 underlying expression data). GSE91061's `run_ulm()` input matrix uses `edgeR` TMM+log-CPM
 normalization (`cpm(dge, log=TRUE)`) — normalization prep, not the final test.
+
+**H5c method: exploratory, capped a priori — grade ceiling fixed regardless of result.**
+Three papers were identified as the real sources behind the pre-registration's "Wu 2024 /
+Guo 2025 / Wang 2025" citations (literature search, not assumed): Wu et al. 2024 (*Cell*,
+PMID 38447573), Guo et al. 2025 (*Funct Integr Genomics*, PMID 41068349), Wang et al. 2025
+(*Comput Struct Biotechnol J*, PMID 41245889). Their marker sets were verified to genuinely
+different depths, disclosed rather than hidden:
+- **Wang 2025**: full text obtained (open access, PMC12613047). 13 genes explicitly reported
+  as elevated markers of the paper's two tumor-enriched terminal neutrophil states (Neu_c7,
+  Neu_c10): `CD83, HLA-DRA, CD274, RFX5, CCL3, VEGFA, MAP1LC3B, BHLHE40, LDHA, HES4, MAFG,
+  PPARG, CXCR4`. (CXCR2/SELL are also reported but as *down*-regulated in these states —
+  excluded, since a marker set should mean genes elevated in the state, not lost by it.)
+- **Guo 2025**: abstract only (confirmed paywalled, no PMC full text). 4 genes named:
+  `CXCR2, VNN2` (the paper's main immunosuppressive subpopulation), `BACH1, ATF2`
+  (regulatory TFs from its gene regulatory network). Thinner than Wang 2025's set purely
+  because of paywall access, not because the paper reports less biology.
+- **Wu 2024**: **excluded from the quantitative test entirely.** Confirmed paywalled (direct
+  fetch returned HTTP 403); confirmed zero gene symbols are named in its accessible abstract;
+  confirmed NCBI's own curated PubMed-to-Gene links return nothing for this PMID. No gene set
+  was substituted, approximated, or inferred for it — a genuine access constraint, disclosed
+  as a limitation, not worked around.
+
+**Test population**: H1's full externally-sourced screening panel (327 genes, recomputed
+identically to `03_recruitment/03_h1_discovery_screen.R`'s own 3 msigdbr GO:MF terms — not a
+new panel, cross-checked to match H1's own reported 327) and H1's 4 FDR<0.05 hits, each
+tested against Wang's and Guo's marker sets separately (2 populations x 2 marker sets = 4
+tests). **Test**: hypergeometric over-representation test plus Jaccard index, matching the
+pre-registration's specified method. Universe = 55,737 genes present in the GSE120575
+matrix (same convention as H4). BH correction applied across the 4 tests.
 
 ## Evidence
 
@@ -121,6 +151,29 @@ cross-reference between two independent pre-registered confirmatory tests, not a
 statistical test connecting them — no additional analysis was run to explain this recurring
 pattern, consistent with the confirmatory-only scope of H5a and H5b.
 
+**H5c evidence.**
+
+| Population | Marker set | Overlap | Overlapping genes | P (hypergeometric) | FDR | Jaccard |
+|---|---|---|---|---|---|---|
+| H1 screening panel (327 genes) | Wang 2025 (13 genes) | 2 | CCL3, VEGFA | 0.00256 | **0.00513** | 0.006 |
+| H1 screening panel (327 genes) | Guo 2025 (4 genes) | 0 | — | 1.00 | 1.00 | 0.000 |
+| H1 FDR<0.05 hits (4 genes) | Wang 2025 (13 genes) | 1 | CCL3 | 0.00093 | **0.00373** | 0.063 |
+| H1 FDR<0.05 hits (4 genes) | Guo 2025 (4 genes) | 0 | — | 1.00 | 1.00 | 0.000 |
+
+Full results: `results/h5c_literature_concordance.csv`
+(`07_validation_concordance/07_h5c_literature_concordance.R`).
+
+Both Wang-2025 comparisons are statistically significant (FDR<0.05) — driven entirely by
+**CCL3** (present in H1's panel, H1's hits, and Wang 2025's TAN marker set) and **VEGFA**
+(present in H1's panel, a growth factor by GO annotation, present in Wang 2025's marker set
+but not itself one of H1's response-associated hits). Guo 2025 shows zero overlap at either
+population level — biologically unsurprising, since Guo's markers (`CXCR2, VNN2, BACH1,
+ATF2`) are receptors and transcription factors, not secreted cytokines/chemokines/growth
+factors, so they were never eligible to appear in H1's GO-defined screening panel in the
+first place. **Per the pre-registration, this significance does NOT upgrade H5c's grade** —
+it remains Exploratory regardless, because a set-overlap comparison is not a
+response-outcome test.
+
 ## Interpretation
 
 1. **Statistical change.** 1 of 4 pre-specified genes (LTB) shows direction-consistent,
@@ -169,6 +222,23 @@ These caveats were fixed in advance specifically so they could not be selectivel
 after seeing which genes did or did not replicate — they apply to the whole pre-registered
 test, not assembled after the fact to explain this particular pattern.
 
+**H5c interpretation** (five steps; grade ceiling fixed a priori, not raised by significance):
+
+1. **Statistical change.** H1's screening panel and its FDR<0.05 hits both show significant
+   overlap (FDR<0.05) with Wang 2025's TAN marker set (driven by CCL3 and VEGFA); zero
+   overlap with Guo 2025's set.
+2. **Biological process.** CCL3 — one of H1's own significant, non-responder-elevated hits —
+   is independently reported as a marker of Wang 2025's pro-angiogenic TAN state (Neu_c10).
+   VEGFA, present in H1's broader screening panel, is also part of that same reported state.
+3. **Tumour immunology implication.** A modest, literature-connectable concordance between
+   H1's discovery and one independently published pan-cancer TAN atlas — stated as
+   plausibility, matching the same standard already applied to H1's own LTB/TLS concordance
+   and H4's IKZF3/BACH2 concordance, not as independent validation of either finding.
+4. **Translational implication.** None drawn — an Exploratory, capped-a-priori concordance
+   test does not support a translational claim on its own.
+5. **Validating experiment.** Not proposed here; deferred to `09_synthesis` if this
+   concordance is judged worth carrying forward alongside H5a/H5b's results.
+
 ## Limitations
 
 Per the Negative Results Policy, three of four pre-specified negative findings are reported
@@ -202,6 +272,29 @@ in full, not downplayed.
 - **H4's own conclusions are not reopened or reinterpreted** — H5b is its own finding,
   cross-referencing H4, same convention as H5a/H1.
 
+**H5c limitations:**
+
+- **Marker-set verification depth is asymmetric across the three cited papers, and this is
+  reported transparently rather than hidden**: Wang 2025's 13-gene set is from full open-
+  access text; Guo 2025's 4-gene set is abstract-only (paywalled); Wu 2024 contributes zero
+  genes and is excluded from the quantitative test entirely (confirmed paywalled, confirmed
+  no gene symbols in its accessible abstract, confirmed no NCBI-curated gene links for this
+  PMID). This asymmetry reflects real access constraints, not a difference in how much
+  biology each paper actually reports.
+- **The significant overlap is driven by only 2 genes (CCL3, VEGFA) against a small,
+  paywall-limited marker universe** — a real, literature-connectable signal, but a thin one;
+  not treated as stronger evidence than its Exploratory grade already states.
+- **Guo 2025's zero overlap does not mean no concordance exists** — its markers are
+  receptors/TFs, categorically excluded from H1's secreted-factor-focused GO screening
+  panel by construction, so this null result reflects panel scope, not biological
+  disagreement. Stated as a limitation of the comparison, not a negative finding about Guo
+  2025's biology.
+- **A set-overlap test can never independently validate H1 or H4** — it is capped at
+  Exploratory a priori regardless of its p-values, per the pre-registration.
+- **If full supplementary marker tables for Guo 2025 or Wu 2024 become legitimately
+  accessible in future**, this analysis can be updated with a new `CHANGELOG.md` entry
+  recording the change — not a silent retroactive edit.
+
 ## Conclusion
 
 **Evidence grade: Exploratory (LTB); Negative finding (CCL3, CCL4, CXCL13)** — reported
@@ -221,9 +314,18 @@ nuclear-receptor module nor its E2F proliferation module replicates by the pre-r
 rubric — both reverse direction in GSE91061. H4's own conclusions are unchanged; this is
 H5b's own finding, cross-referencing H4.
 
-**H5 status overall.** H5a and H5b are both complete: one Exploratory gene-level result
-(LTB), three gene-level Negative findings, and two module-level Negative findings — all
-reported exactly as pre-registered, with no criteria relaxed and no post-hoc explanation
-substituted for the pre-declared caveats. No broader biological synthesis is drawn here —
-any such synthesis, if warranted, belongs in `09_synthesis`, after H5 (including H5c) is
-complete in full.
+**H5c evidence grade: Exploratory, fixed a priori** (per the pre-registration, not raised by
+the statistically significant overlap with Wang 2025's marker set). H1's screening panel and
+its FDR<0.05 hits show a modest, literature-connectable concordance with one independently
+published pan-cancer TAN atlas (Wang 2025: CCL3, VEGFA), and no overlap with a second (Guo
+2025, for reasons of panel scope, not disagreement). Wu 2024 could not be tested at all —
+disclosed as a limitation, not a null result. This is the weakest-tier evidence type used
+anywhere in this project, by design, and is reported as exactly that.
+
+**H5 status overall — H5 is now complete in full (H5a, H5b, H5c).** One Exploratory
+gene-level result (LTB), three gene-level Negative findings, two module-level Negative
+findings, and one Exploratory literature-concordance result (significant but capped) — all
+reported exactly as pre-registered, with no criteria relaxed, no post-hoc explanation
+substituted for the pre-declared caveats, and no marker genes fabricated for papers that
+could not be fully verified. No broader biological synthesis is drawn here — any such
+synthesis belongs in `09_synthesis`, the next and final module.

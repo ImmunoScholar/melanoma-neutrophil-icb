@@ -555,3 +555,47 @@ Exploratory regardless of its numeric result, and does not feed back into H5a/H5
 No further exploratory analyses are permitted unless a genuine methodological blocker forces
 one — and any such blocker will be logged here, with the blocker and justification, before
 being acted on, matching this project's change-control discipline throughout.
+
+## 2026-08-02 — H5c: literature identification and verified-depth marker sets
+
+**Not a deviation** — this documents the literature-verification work behind H5c's marker
+sets, per the pre-registration's requirement that the test use externally-sourced marker
+lists, not hand-picked genes.
+
+**Papers identified.** The pre-registration's "Wu 2024 / Guo 2025 / Wang 2025" citations were
+resolved to specific, real papers via literature search (PubMed, Semantic Scholar), not
+assumed from memory: Wu et al. 2024, *Cell* (PMID 38447573, 316 citations) — the pan-cancer
+neutrophil antigen-presenting-state paper matching the brief's description exactly; Guo et
+al. 2025, *Funct Integr Genomics* (PMID 41068349); Wang et al. 2025, *Comput Struct
+Biotechnol J* (PMID 41245889, PMC12613047).
+
+**Access verified, not assumed, per paper — asymmetric depth disclosed rather than hidden.**
+Only Wang 2025 has open full text (PMC). Guo 2025 and Wu 2024 are paywalled — confirmed
+directly (Wu 2024's DOI returned HTTP 403 on direct fetch), not inferred from journal
+reputation. Marker genes were extracted only from what each paper's accessible text actually
+names:
+- Wang 2025 (full text): 13 genes, covering both of the paper's tumor-enriched terminal
+  neutrophil states (Neu_c7, Neu_c10) — `CD83, HLA-DRA, CD274, RFX5, CCL3, VEGFA, MAP1LC3B,
+  BHLHE40, LDHA, HES4, MAFG, PPARG, CXCR4`. Two additional reported genes (CXCR2, SELL) were
+  deliberately excluded — the paper reports them as *down*-regulated in these states, and a
+  "TAN marker set" should mean genes the state gains, not loses.
+- Guo 2025 (abstract only): 4 genes — `CXCR2, VNN2, BACH1, ATF2`.
+- Wu 2024: **zero genes accessible.** Checked three independent ways before concluding this,
+  not assumed from the paywall alone: (1) direct fetch of the DOI returned HTTP 403; (2) the
+  accessible abstract names no gene symbols for its "antigen-presenting program" (unlike
+  Wang/Guo, whose abstracts do name specific genes); (3) NCBI's own curated PubMed-to-Gene
+  cross-reference (`elink`, `pubmed_gene`) returns an empty result for this PMID. Excluded
+  from the quantitative test entirely rather than approximated with a plausible-sounding
+  gene list — explicitly instructed by the project owner: no marker set is fabricated or
+  inferred for a paper that cannot be verified.
+
+**If full supplementary marker tables for Guo 2025 or Wu 2024 become legitimately accessible
+in future** (e.g. institutional access, author correspondence), H5c's marker sets can be
+updated and the analysis rerun, with the change recorded here as a new entry — not a silent
+edit to the existing result.
+
+**Result** (see `07_validation_concordance/README.md` and `results/evidence_ledger.tsv`,
+row `H5c`, for full detail): significant overlap with Wang 2025's set (H1 panel: CCL3, VEGFA,
+FDR=0.005; H1 hits: CCL3, FDR=0.004), zero overlap with Guo 2025's set. Graded Exploratory,
+fixed a priori — statistical significance does not upgrade this grade, per the pre-
+registration's own rubric ceiling.
