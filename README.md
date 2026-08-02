@@ -78,10 +78,17 @@ Architecture frozen 2026-08-01. Environment and repository scaffolding complete.
   responders (IKZF3/BACH2/SATB2 — established lymphocyte-differentiation regulators, stated
   as plausibility, not validation). Same therapy-type confound H1 documented (same cohort)
   applies here too, restated rather than assumed already covered. Full results and
-  limitations in `06_regulation_communication/README.md`. **Not yet run**: H4's
-  ligand-receptor communication-network component (testing convergence on T-cell suppression)
-  and the pre-specified secondary compartment-level TF-activity follow-up (conditions recorded
-  in `CHANGELOG.md`).
+  limitations in `06_regulation_communication/README.md`.
+  **Secondary/exploratory follow-up complete** (pre-registered, `CHANGELOG.md`): restricted
+  to the primary's 56 locked TFs, compartment-level (T_cell/NK/B_cell). T_cell's result
+  (43/56 hits) is not treated as independent evidence — it correlates strongly with the
+  primary whole-sample signal (r=0.887) and shares its patient count, both explained by T
+  cells being 69% of whole-sample composition. The informative component is NK (5 TFs) and
+  B_cell (3 TFs), reaching significance despite lower power — B cells specifically carry a
+  responder-elevated lymphocyte-differentiation signal (IKZF3), echoing H2's own B-cell/LTB
+  finding. Graded Exploratory, separate ledger row, not promoted into Figure 4 or any
+  main-narrative figure. **Not yet run**: H4's ligand-receptor communication-network
+  component (testing convergence on T-cell suppression).
 - **H5: not started.**
 
 See `REPRODUCIBILITY.md` for exact reproduction instructions and `CHANGELOG.md` for every
