@@ -85,3 +85,7 @@ Rscript -e 'renv::restore()'   # restores the pinned R 4.6.1 package library (re
 
 `REPRODUCIBILITY.md` gives the full environment, dataset checksums, and the ordered command
 sequence to regenerate every result and figure from a fresh clone.
+
+## License
+
+[MIT](LICENSE)
